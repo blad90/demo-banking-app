@@ -2,7 +2,7 @@
 #### by BLAD
 
 ## Architecture
-
+![architecture.png](docs/architecture/architecture.png)
 
 ## Clone the repository
 1. Using the terminal, go to the folder or directory for the project.
