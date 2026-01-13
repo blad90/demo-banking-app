@@ -1,17 +1,45 @@
 services:
+  user-service:
+    build:
+      context: .
+      dockerfile: services/user-service/Dockerfile
+    image: user-service
+    ports:
+      - "8081:8081"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/users_db
+      - SPRING_DATASOURCE_USERNAME=test
+      - SPRING_DATASOURCE_PASSWORD=test
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+
   postgres:
     image: postgres:15-alpine
+    volumes:
+      - user-data:/var/lib/postgresql/data
     environment:
-      POSTGRES_PASSWORD: test123
+      POSTGRES_DB: users_db
+      POSTGRES_USER: test
+      POSTGRES_PASSWORD: test
     ports:
       - "5432:5432"
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U test -d users_db" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   redis:
     image: redis:7-alpine
     ports:
       - "6379:6379"
-
   nginx:
     image: nginx:alpine
     ports:
       - "8080:80"
+volumes:
+    user-data:
+      driver: local
