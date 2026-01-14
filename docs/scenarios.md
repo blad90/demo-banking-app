@@ -1,4 +1,4 @@
-## Demo Bank
+## DemoBank
 #### by BLAD
 
 ---

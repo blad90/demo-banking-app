@@ -3,6 +3,8 @@ name: User Service CI
 on:
   push:
     branches: [ "main", "develop" ]
+    paths:
+      - 'services/user-service/**'
   pull_request:
     branches: [ "main", "develop" ]
 

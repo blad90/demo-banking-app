@@ -8,13 +8,13 @@ COPY pom.xml /app/parent-pom.xml
 RUN mvn -f /app/parent-pom.xml -N clean install -DskipTests
 
 # Copies service code
-COPY services/user-service/pom.xml ./pom.xml
-COPY services/user-service/src ./src
+COPY services/account-service/pom.xml ./pom.xml
+COPY services/account-service/src ./src
 
 # Builds the service
 RUN mvn clean package -DskipTests
 
 FROM amazoncorretto:25-alpine
 WORKDIR /app
-COPY --from=build /app/target/*.jar user-service.jar
-ENTRYPOINT ["java","-jar","/app/user-service.jar"]
+COPY --from=build /app/target/*.jar account-service.jar
+ENTRYPOINT ["java","-jar","/app/account-service.jar"]
