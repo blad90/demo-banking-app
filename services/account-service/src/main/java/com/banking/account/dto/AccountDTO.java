@@ -12,8 +12,8 @@ import java.time.LocalDateTime;
 public class AccountDTO {
     private Long id;
     private String accountNumber;
-    private String user;
-    private double balance;
+    private String customer;
+    private Double balance;
     private String accountType;
     private LocalDateTime accountCreationDate;
     private LocalDateTime accountLastUpdated;

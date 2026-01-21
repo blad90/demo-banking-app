@@ -22,8 +22,8 @@ public class Account {
     @GeneratedValue
     private Long id;
     private String accountNumber;
-    private String user;
-    private double balance;
+    private String customer;
+    private Double balance;
     private String accountType;
     @CreationTimestamp
     private LocalDateTime accountCreationDate;

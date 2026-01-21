@@ -37,7 +37,7 @@ public class UserMapper {
         if(userDTO.getFirstName() != null) user.setFirstName(userDTO.getFirstName());
         if(userDTO.getLastName() != null) user.setLastName(userDTO.getLastName());
         if(userDTO.getAlias() != null) user.setAlias(userDTO.getAlias());
-        if(userDTO.getAlias() != null) user.setAddress(userDTO.getAddress());
+        if(userDTO.getAddress() != null) user.setAddress(userDTO.getAddress());
         if(userDTO.getEmailAddress() != null) user.setEmailAddress(userDTO.getEmailAddress());
         if(userDTO.getPhoneNumber() != null) user.setPhoneNumber(userDTO.getPhoneNumber());
 
