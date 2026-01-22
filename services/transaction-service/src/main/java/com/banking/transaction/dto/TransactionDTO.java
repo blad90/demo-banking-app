@@ -5,13 +5,15 @@ import com.banking.transaction.entity.TransactionType;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
+
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
 public class TransactionDTO {
-    private Long id;
+    private UUID id;
     private String description;
     private double transactionAmount;
     private LocalDateTime transactionDate;
