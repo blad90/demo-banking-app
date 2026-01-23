@@ -3,6 +3,7 @@ package com.banking.account.service;
 import com.banking.account.dto.AccountDTO;
 import com.banking.account.entity.Account;
 import com.banking.account.entity.AccountState;
+import com.banking.account.exceptions.BankAccountNotFoundException;
 import com.banking.account.repository.IAccountRepository;
 import com.banking.account.utils.AccountMapper;
 import lombok.AllArgsConstructor;
@@ -26,44 +27,51 @@ public class AccountServiceImpl implements IAccountService{
     }
 
     @Override
-    public Boolean updateAccount(String accountNumber, AccountDTO accountDTO) {
-        Account account = accountRepository.findAccountByAccountNumber(accountNumber).orElse(null);
-        Account accountToUpdate;
+    public void updateAccount(String accountNumber, AccountDTO accountDTO) {
+        Account account = accountRepository.findAccountByAccountNumber(accountNumber)
+                .orElseThrow(()-> new BankAccountNotFoundException(accountNumber));
 
-        if(account != null){
-            accountToUpdate = AccountMapper.mapToEntityUpdate(accountDTO, account);
-            accountRepository.save(accountToUpdate);
-            return true;
-        }
-        return false;
+        Account accountToUpdate = AccountMapper.mapToEntityUpdate(accountDTO, account);
+        accountRepository.save(accountToUpdate);
+    }
+
+
+
+    private void changeAccountState(String accountNumber, AccountDTO accountDTO, AccountState accountState) {
+        Account account = accountRepository.findAccountByAccountNumber(accountNumber)
+                .orElseThrow(()-> new BankAccountNotFoundException(accountNumber));
+
+        Account accountToEnable = AccountMapper.mapToEntityUpdate(accountDTO, account);
+        accountToEnable.setAccountState(accountState);
+        accountRepository.save(accountToEnable);
     }
 
     @Override
-    public Boolean disableAccount(String accountNumber, AccountDTO accountDTO) {
-        Account account = accountRepository.findAccountByAccountNumber(accountNumber).orElse(null);
-        Account accountToDisable;
+    public void enableAccount(String accountNumber, AccountDTO accountDTO) {
+        changeAccountState(accountNumber, accountDTO, AccountState.ACCOUNT_ACTIVE);
+    }
 
-        if(account != null){
-            accountToDisable = AccountMapper.mapToEntityUpdate(accountDTO, account);
-            accountToDisable.setAccountState(AccountState.ACCOUNT_INACTIVE);
-            accountRepository.save(accountToDisable);
-            return true;
-        }
-        return false;
+    @Override
+    public void freezeAccount(String accountNumber, AccountDTO accountDTO) {
+        changeAccountState(accountNumber, accountDTO, AccountState.ACCOUNT_FROZEN);
+    }
+
+    @Override
+    public void disableAccount(String accountNumber, AccountDTO accountDTO) {
+        changeAccountState(accountNumber, accountDTO, AccountState.ACCOUNT_INACTIVE);
     }
 
     @Override
     public AccountDTO retrieveAccountByAccNumber(String accountNumber) {
-        Account retrievedAccount = accountRepository.findAccountByAccountNumber(accountNumber).get();
-        // TODO: Retrieve user correctly according to ID.
-        return AccountMapper.mapToDTO(0L, retrievedAccount);
+        Account account = accountRepository.findAccountByAccountNumber(accountNumber)
+                .orElseThrow(()-> new BankAccountNotFoundException(accountNumber));
+        return AccountMapper.mapToDTO(0L, account);
     }
 
     @Override
     public List<AccountDTO> retrieveAllAccounts() {
         return accountRepository.findAll()
                 .stream()
-                // TODO: Retrieve user correctly according to ID.
                 .map(account -> AccountMapper.mapToDTO(0L, account))
                 .toList();
     }

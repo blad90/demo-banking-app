@@ -35,23 +35,25 @@ public class UserController {
 
     @PatchMapping("/update/{id}")
     public ResponseEntity<String> modifyUser(@PathVariable Long id, @RequestBody UserDTO userDTO) {
-        String message;
-        boolean result = userService.updateUser(id, userDTO);
+        userService.updateUser(id, userDTO);
+        return new ResponseEntity<>("User updated successfully!", HttpStatus.OK);
+    }
 
-        if(result) message = "User updated successfully";
-        else message = "Error. User couldn't be updated.";
+    @PatchMapping("/enable/{id}")
+    public ResponseEntity<String> enableUser(@PathVariable Long id, @RequestBody UserDTO userDTO) {
+        userService.enableUser(id, userDTO);
+        return new ResponseEntity<>("Completed. User is being activated.", HttpStatus.OK);
+    }
 
-        return new ResponseEntity<>(message, HttpStatus.OK);
+    @PatchMapping("/suspend/{id}")
+    public ResponseEntity<String> suspendUser(@PathVariable Long id, @RequestBody UserDTO userDTO) {
+        userService.suspendUser(id, userDTO);
+        return new ResponseEntity<>("Completed. User is being suspended.", HttpStatus.OK);
     }
 
     @PatchMapping("/disable/{id}")
     public ResponseEntity<String> disableUser(@PathVariable Long id, @RequestBody UserDTO userDTO) {
-        String message;
-        boolean result = userService.disableUser(id, userDTO);
-
-        if(result) message = "Completed. User is being disabled";
-        else message = "Error. User couldn't be disabled";
-
-        return new ResponseEntity<>(message, HttpStatus.OK);
+        userService.disableUser(id, userDTO);
+        return new ResponseEntity<>("Completed. User is being inactivated.", HttpStatus.OK);
     }
 }

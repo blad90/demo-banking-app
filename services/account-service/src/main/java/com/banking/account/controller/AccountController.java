@@ -36,19 +36,26 @@ public class AccountController {
 
     @PatchMapping("/update/{accountNumber}")
     public ResponseEntity<String> updateAccount(@PathVariable String accountNumber, @RequestBody AccountDTO accountDTO) {
-        String message;
-        boolean result = accountService.updateAccount(accountNumber, accountDTO);
-        if(result) message = "Account updated successfully";
-        else message = "Error. Account couldn't be updated.";
-        return new ResponseEntity<>(message, HttpStatus.OK);
+
+        accountService.updateAccount(accountNumber, accountDTO);
+        return new ResponseEntity<>("Account updated successfully!", HttpStatus.OK);
+    }
+
+    @PatchMapping("/enable/{accountNumber}")
+    public ResponseEntity<String> enableAccount(@PathVariable String accountNumber, @RequestBody AccountDTO accountDTO) {
+        accountService.enableAccount(accountNumber, accountDTO);
+        return new ResponseEntity<>("Completed. Account is being activated.", HttpStatus.OK);
+    }
+
+    @PatchMapping("/freeze/{accountNumber}")
+    public ResponseEntity<String> freezeAccount(@PathVariable String accountNumber, @RequestBody AccountDTO accountDTO) {
+        accountService.freezeAccount(accountNumber, accountDTO);
+        return new ResponseEntity<>("Completed. Account is being frozen.", HttpStatus.OK);
     }
 
     @PatchMapping("/inactivate/{accountNumber}")
     public ResponseEntity<String> disableAccount(@PathVariable String accountNumber, @RequestBody AccountDTO accountDTO) {
-        String message;
-        boolean result = accountService.disableAccount(accountNumber, accountDTO);
-        if(result) message = "Complete. The account is being inactivated.";
-        else message = "Error. Account couldn't be inactivated.";
-        return new ResponseEntity<>(message, HttpStatus.OK);
+        accountService.disableAccount(accountNumber, accountDTO);
+        return new ResponseEntity<>("Completed. Account is being inactivated.", HttpStatus.OK);
     }
 }

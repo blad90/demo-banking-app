@@ -12,6 +12,7 @@ public class UserMapper {
         userDTO.setFirstName(user.getFirstName());
         userDTO.setLastName(user.getLastName());
         userDTO.setAlias(user.getAlias());
+        userDTO.setNationalId(user.getNationalId());
         userDTO.setAddress(user.getAddress());
         userDTO.setEmailAddress(user.getEmailAddress());
         userDTO.setPhoneNumber(user.getPhoneNumber());
@@ -25,6 +26,7 @@ public class UserMapper {
         user.setFirstName(userDTO.getFirstName());
         user.setLastName(userDTO.getLastName());
         user.setAlias(userDTO.getAlias());
+        user.setNationalId(userDTO.getNationalId());
         user.setAddress(userDTO.getAddress());
         user.setEmailAddress(userDTO.getEmailAddress());
         user.setPhoneNumber(userDTO.getPhoneNumber());
