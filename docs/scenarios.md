@@ -50,11 +50,11 @@
 ## Flows
 ### Open Account Flow
 1. The `Account Service` receives `POST /accounts` request and creates the `Open Account` saga orchestrator.
-2. The saga orchestrator creates an `Account` in the `ACCOUNT_CREATED` state.
-3. It then sends a `Validate User` command to the `User Service`.
-4. The `User Service` tries to validate the user.
-5. It then back a reply message indicating the outcome.
-6. The saga orchestrator either approves or reject the `Account`.
+2. It then sends a `Validate User` command to the `User Service`.
+3. The `User Service` tries to validate the user.
+4. It then back a reply message indicating the outcome.
+5. The saga orchestrator either approves or reject the `Account`.
+6. The saga orchestrator creates an `Account` in the `ACCOUNT_CREATED` state.
 
 ### Create Transaction Flow
 

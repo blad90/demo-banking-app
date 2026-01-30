@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-gateway
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: api-gateway
+  template:
+    metadata:
+      labels:
+        app: api-gateway
+    spec:
+      containers:
+        - name: api-gateway
+          image: api-gateway:latest
+          imagePullPolicy: IfNotPresent # TODO: ONLY FOR DEV ENVIRONMENT, NOT GOOD FOR PROD
+          ports:
+            - containerPort: 8080
+          env:
+            - name: USER_SERVICE_URL
+              value: "http://user-service:8080"
+            - name: ACCOUNT_SERVICE_URL
+              value: "http://account-service:8080"
+            - name: TRANSACTION_SERVICE_URL
+              value: "http://transaction-service:8080"
