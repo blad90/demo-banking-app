@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: account-service
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: account-service
+  template:
+    metadata:
+      labels:
+        app: account-service
+    spec:
+      containers:
+        - name: account-service
+          image: account-service:latest
+          imagePullPolicy: IfNotPresent # TODO: ONLY FOR DEV ENVIRONMENT, NOT GOOD FOR PROD
+          ports:
+            - containerPort: 8082
+          env:
+                - name: SPRING_DATASOURCE_URL
+                  value: jdbc:postgresql://postgres:5432/accounts_db
+                - name: SPRING_DATASOURCE_USERNAME
+                  value: test
+                - name: SPRING_DATASOURCE_PASSWORD
+                  value: test

@@ -57,16 +57,19 @@
             <artifactId>spring-boot-starter-kafka</artifactId>
             <version>4.0.1</version>   <!-- or omit version if using dependency management -->
         </dependency>
-        <!-- Reference to shared common library -->
 <!--        <dependency>-->
-<!--            <groupId>com.banking</groupId>-->
-<!--            <artifactId>common-lib</artifactId>-->
-<!--            <version>${project.version}</version>-->
+<!--            <groupId>org.springframework.boot</groupId>-->
+<!--            <artifactId>spring-boot-starter-actuator</artifactId>-->
 <!--        </dependency>-->
+        <!-- Reference to shared common library -->
+        <!--        <dependency>-->
+        <!--            <groupId>com.banking</groupId>-->
+        <!--            <artifactId>common-lib</artifactId>-->
+        <!--            <version>${project.version}</version>-->
+        <!--        </dependency>-->
     </dependencies>
 
     <build>
-        <finalName>user-service</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

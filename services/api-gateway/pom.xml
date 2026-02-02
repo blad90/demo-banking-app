@@ -6,6 +6,7 @@
         <groupId>com.banking</groupId>
         <artifactId>demo-banking-app</artifactId>
         <version>1.0.0</version>
+        <relativePath/>
     </parent>
 
     <groupId>com.banking.apigateway</groupId>

@@ -1,13 +1,19 @@
 FROM maven:3.9-eclipse-temurin-25 AS build
-WORKDIR /build
+WORKDIR /app
 
-# Copies entire project
-COPY . .
+# Copies parent POM
+COPY pom.xml /app/parent-pom.xml
 
-# Build only the transaction-service module
-RUN mvn clean package -pl services/transaction-service -am -DskipTests
+# Installs ONLY the parent POM (no modules)
+RUN mvn -f /app/parent-pom.xml -N clean install -DskipTests
 
+# Copies service code
+COPY services/transaction-service/pom.xml ./pom.xml
+COPY services/transaction-service/src ./src
+
+# Builds the service
+RUN mvn clean package -DskipTests
 FROM amazoncorretto:25-alpine
 WORKDIR /app
-COPY --from=build /build/services/transaction-service/target/*jar transacion-service.jar
+COPY --from=build /app/target/*jar transacion-service.jar
 ENTRYPOINT ["java","-jar","/app/transaction-service.jar"]

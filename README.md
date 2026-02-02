@@ -23,6 +23,21 @@ Spring Boot microservices, Kafka, OpenTelemetry tracing, Docker and Terraform.
 
 ## Extras
 ### For rebuilding docker containers
-- `docker compose down`
+- `docker build -f services/[NAME]-service/Dockerfile -t [NAME]-service .`
 - `docker compose build --no-cache [NAME]-service`
 - `docker compose up [NAME]-service`
+
+### Using minikube (Kubernetes)
+- To start minikube, use the command: `minikube start` 
+- To stop minikube, use the command: `minikube stop`
+- To apply any changes in deployment config: `kubectl apply -f infrastructure/kubernetes/base/[SERVICE_NAME]/deployment.yaml`
+- To apply any changes in service config: `kubectl apply -f infrastructure/kubernetes/base/[SERVICE_NAME]/service.yaml`
+- To check nodes running: `kubectl get nodes`
+- To verify cluter IP's: `kubectl get svc`
+- For removing a pod: `kubectl delete pod [NAME]`
+- For deleting a deployment: `kubectl delete deployment [NAME]`
+- For restarting : `kubectl rollout restart deployment/[NAME]-service`
+
+### Databases
+- At the beginning, in order to create the database for each service, run: \
+  `kubectl create configmap postgres-init-db --from-file=infrastructure/docker/postgres/init-db.sql`
