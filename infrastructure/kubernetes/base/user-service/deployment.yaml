@@ -25,3 +25,7 @@ spec:
                   value: test
                 - name: SPRING_DATASOURCE_PASSWORD
                   value: test
+                - name: SPRINGDOC_SWAGGER-UI_URL
+                  value: /v3/api-docs?service=users
+                - name: SPRINGDOC_SWAGGER-UI_CONFIG-URL
+                  value: /v3/api-docs/swagger-config?service=users

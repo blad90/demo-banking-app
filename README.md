@@ -23,7 +23,7 @@ Spring Boot microservices, Kafka, OpenTelemetry tracing, Docker and Terraform.
 
 ## Extras
 ### For rebuilding docker containers
-- `docker build -f services/[NAME]-service/Dockerfile -t [NAME]-service .`
+- `docker build -f services/[NAME]-service/Dockerfile -t [NAME]-service:latest .`
 - `docker compose build --no-cache [NAME]-service`
 - `docker compose up [NAME]-service`
 
