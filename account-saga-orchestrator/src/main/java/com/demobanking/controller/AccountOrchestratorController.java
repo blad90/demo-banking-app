@@ -11,4 +11,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class AccountOrchestratorController {
 
     private final IAccountOrchestratorService accountOrchestratorService;
+
+    public void createAccount(){
+
+    }
 }

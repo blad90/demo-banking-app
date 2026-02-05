@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package users;
+option java_package = "com.demobanking.events";
+
+// The Command: Account Orchestrator -> User Service
+message ValidateUserCommand {
+  int64 user_id = 1;
+}
+
+// The Event: User Service -> Account Orchestrator
+message UserValidatedEvent {
+  int64 user_id = 1;
+  bool validated = 2;
+}

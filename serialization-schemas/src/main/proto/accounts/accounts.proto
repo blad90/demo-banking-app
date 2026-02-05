@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+package accounts;
+option java_package = "com.demobanking.events";
+
+// The Command: Account Orchestrator -> Account Service
+message ProcessAccountCreationCommand {
+  string account_number = 1;
+  int64 user_id = 2;
+  string account_type = 3;
+}
+
+// The Event: Account Service -> Account Orchestrator
+enum AccountState {
+  ACCOUNT_CREATED = 0;
+  ACCOUNT_ACTIVE = 1;
+  ACCOUNT_FROZEN = 2;
+  ACCOUNT_INACTIVE = 3;
+}
+
+message AccountCreatedEvent {
+  string account_number = 1;
+  int64 user_id = 2;
+  AccountState accountState = 3;
+}

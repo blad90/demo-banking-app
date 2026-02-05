@@ -28,7 +28,15 @@ public class UserServiceImpl implements IUserService{
             groupId = "user-service-group")
     public void onUserValidate(Long userIdToValidate) {
         boolean validated = userRepository.findById(userIdToValidate).isPresent();
-        userValidateProducer.publishUserValidateEvents(validated);
+
+        User user = userRepository.findById(userIdToValidate).orElse(null);
+
+        if(user != null) {
+            UserDTO userDTO = UserMapper.mapToDTO(user);
+            userValidateProducer.publishUserValidated(userDTO);
+        } else{
+            userValidateProducer.publishUserNotValidated(validated);
+        }
     }
 
     @Override

@@ -20,6 +20,15 @@
     <name>User Service</name>
     <packaging>jar</packaging>
 
+    <repositories>
+        <repository>
+            <id>confluent</id>
+            <name>Confluent Maven Repo</name>
+            <url>https://packages.confluent.io/maven/</url>
+            <layout>default</layout>
+        </repository>
+    </repositories>
+
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -61,12 +70,17 @@
 <!--            <groupId>org.springframework.boot</groupId>-->
 <!--            <artifactId>spring-boot-starter-actuator</artifactId>-->
 <!--        </dependency>-->
-        <!-- Reference to shared common library -->
-        <!--        <dependency>-->
-        <!--            <groupId>com.banking</groupId>-->
-        <!--            <artifactId>common-lib</artifactId>-->
-        <!--            <version>${project.version}</version>-->
-        <!--        </dependency>-->
+        <dependency>
+            <groupId>io.confluent</groupId>
+            <artifactId>kafka-protobuf-serializer</artifactId>
+            <version>7.5.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.banking</groupId>
+            <artifactId>serialization-schemas</artifactId>
+            <version>1.0.0</version>
+        </dependency>
     </dependencies>
 
     <build>

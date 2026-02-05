@@ -21,6 +21,7 @@ public class AccountServiceImpl implements IAccountService{
     private final AccountEventProducer accountEventProducer;
 
     public void openAccount(CreateAccountCommand createAccountCommand) {
+
         Account newAccount = new Account(
                 createAccountCommand.accountNumber(),
                 createAccountCommand.userId(),

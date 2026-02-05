@@ -10,8 +10,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
                 title = "Account Service API",
                 version = "v1",
                 description = "Account Management Endpoints"
-        ),
-        servers = @Server(url = "http://192.168.49.2:30080/app1", description = "API Gateway")
+        )
+       // , servers = @Server(url = "http://192.168.49.2:30080/app1", description = "API Gateway")
 )
 @SpringBootApplication
 public class AccountServiceApplication {

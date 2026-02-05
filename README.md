@@ -37,6 +37,7 @@ Spring Boot microservices, Kafka, OpenTelemetry tracing, Docker and Terraform.
 - For removing a pod: `kubectl delete pod [NAME]`
 - For deleting a deployment: `kubectl delete deployment [NAME]`
 - For restarting : `kubectl rollout restart deployment/[NAME]-service`
+- For checking logs: `kubectl logs -f deploy/[NAME]`
 
 ### Databases
 - At the beginning, in order to create the database for each service, run: \

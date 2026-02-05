@@ -25,9 +25,17 @@
         <module>services/fraud-screening</module>
         <module>services/transaction-service</module>
         <module>account-saga-orchestrator</module>
+        <module>serialization-schemas</module>
     </modules>
 
     <build>
+        <extensions>
+            <extension>
+                <groupId>kr.motd.maven</groupId>
+                <artifactId>os-maven-plugin</artifactId>
+                <version>1.7.1</version>
+            </extension>
+        </extensions>
         <pluginManagement>
             <plugins>
                 <plugin>
