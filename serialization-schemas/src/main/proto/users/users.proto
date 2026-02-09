@@ -5,11 +5,13 @@ option java_package = "com.demobanking.events";
 
 // The Command: Account Orchestrator -> User Service
 message ValidateUserCommand {
-  int64 user_id = 1;
+  string saga_id = 1;
+  int64 user_id = 2;
 }
 
 // The Event: User Service -> Account Orchestrator
 message UserValidatedEvent {
-  int64 user_id = 1;
-  bool validated = 2;
+  string saga_id = 1;
+  int64 user_id = 2;
+  bool validated = 3;
 }

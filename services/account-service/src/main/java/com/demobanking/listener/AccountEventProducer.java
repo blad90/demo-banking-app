@@ -3,6 +3,7 @@ package com.demobanking.listener;
 import com.demobanking.entity.Account;
 import com.demobanking.events.Accounts;
 import com.demobanking.events.Accounts.AccountCreatedEvent;
+import com.google.protobuf.Message;
 import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
@@ -11,7 +12,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class AccountEventProducer {
 
-    private final KafkaTemplate<String, Object> template;
+    private final KafkaTemplate<String, Message> template;
 
     public void publishAccountCreated(Account account){
         AccountCreatedEvent accountCreatedEvent = AccountCreatedEvent.newBuilder()
@@ -22,7 +23,7 @@ public class AccountEventProducer {
         template.send("ACCOUNT_CREATED_EVENTS_TOPIC", account.getAccountNumber(), accountCreatedEvent);
     }
 
-    public void publishAccountNotCreated(){
-        template.send("ACCOUNT_NOT_CREATED_EVENTS_TOPIC", "ERROR TRYING CREATING ACCOUNT", "Account cannot be created");
-    }
+//    public void publishAccountNotCreated(){
+//        template.send("ACCOUNT_NOT_CREATED_EVENTS_TOPIC", "ERROR TRYING CREATING ACCOUNT", "Account cannot be created");
+//    }
 }

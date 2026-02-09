@@ -3,11 +3,13 @@ package com.demobanking.service;
 import com.demobanking.dto.UserDTO;
 import com.demobanking.entity.User;
 import com.demobanking.entity.UserState;
+import com.demobanking.events.Users.ValidateUserCommand;
 import com.demobanking.exceptions.UserAlreadyExistsException;
 import com.demobanking.exceptions.UserNotFoundException;
 import com.demobanking.messaging.UserValidateProducer;
 import com.demobanking.repository.IUserRepository;
 import com.demobanking.utils.UserMapper;
+import com.google.protobuf.Message;
 import lombok.AllArgsConstructor;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -21,19 +23,19 @@ public class UserServiceImpl implements IUserService{
 
     private IUserRepository userRepository;
     private UserValidateProducer userValidateProducer;
-    private final KafkaTemplate<String, Object> template;
+    private final KafkaTemplate<String, Message> template;
 
     @KafkaListener(
-            topics = "VALIDATE_USER_CMD",
-            groupId = "user-service-group")
-    public void onUserValidate(Long userIdToValidate) {
-        boolean validated = userRepository.findById(userIdToValidate).isPresent();
+            topics = "VALIDATE_USER_CMD")
+    public void onUserValidate(ValidateUserCommand validateUserCommand)  {
+        boolean validated = userRepository.findById(validateUserCommand.getUserId()).isPresent();
 
-        User user = userRepository.findById(userIdToValidate).orElse(null);
+
+        User user = userRepository.findById(validateUserCommand.getUserId()).orElse(null);
 
         if(user != null) {
             UserDTO userDTO = UserMapper.mapToDTO(user);
-            userValidateProducer.publishUserValidated(userDTO);
+            userValidateProducer.publishUserValidated(userDTO, validateUserCommand.getSagaId());
         } else{
             userValidateProducer.publishUserNotValidated(validated);
         }

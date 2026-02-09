@@ -1,7 +1,7 @@
 package com.demobanking.service;
 
-import com.demobanking.controller.CreateAccountCommand;
 import com.demobanking.dto.AccountDTO;
+import com.demobanking.events.Accounts.CreateAccountCommand;
 
 import java.util.List;
 

@@ -3,11 +3,19 @@ syntax = "proto3";
 package accounts;
 option java_package = "com.demobanking.events";
 
-// The Command: Account Orchestrator -> Account Service
+// Old message - for backward compatibility
 message ProcessAccountCreationCommand {
   string account_number = 1;
   int64 user_id = 2;
   string account_type = 3;
+}
+
+// The Command: Account Orchestrator -> Account Service
+message CreateAccountCommand {
+  string saga_id = 1;
+  string account_number = 2;
+  int64 user_id = 3;
+  string account_type = 4;
 }
 
 // The Event: Account Service -> Account Orchestrator
@@ -19,7 +27,13 @@ enum AccountState {
 }
 
 message AccountCreatedEvent {
-  string account_number = 1;
-  int64 user_id = 2;
-  AccountState accountState = 3;
+  string saga_id = 1;
+  string account_number = 2;
+  int64 user_id = 3;
+  AccountState accountState = 4;
+}
+
+message AccountRequest {
+  int64 user_id = 1;
+  string account_type = 2;
 }

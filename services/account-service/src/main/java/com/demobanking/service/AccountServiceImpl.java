@@ -1,9 +1,9 @@
 package com.demobanking.service;
 
-import com.demobanking.controller.CreateAccountCommand;
 import com.demobanking.dto.AccountDTO;
 import com.demobanking.entity.Account;
 import com.demobanking.entity.AccountState;
+import com.demobanking.events.Accounts.CreateAccountCommand;
 import com.demobanking.exceptions.BankAccountNotFoundException;
 import com.demobanking.listener.AccountEventProducer;
 import com.demobanking.repository.IAccountRepository;
@@ -23,15 +23,13 @@ public class AccountServiceImpl implements IAccountService{
     public void openAccount(CreateAccountCommand createAccountCommand) {
 
         Account newAccount = new Account(
-                createAccountCommand.accountNumber(),
-                createAccountCommand.userId(),
-                createAccountCommand.accountType(),
+                createAccountCommand.getAccountNumber(),
+                createAccountCommand.getUserId(),
+                createAccountCommand.getAccountType(),
                 AccountState.ACCOUNT_CREATED);
         newAccount.setBalance(0.00);
         accountRepository.save(newAccount);
-
         accountEventProducer.publishAccountCreated(newAccount);
-
     }
 
     @Override

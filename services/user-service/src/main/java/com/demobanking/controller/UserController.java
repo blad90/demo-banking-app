@@ -2,6 +2,7 @@ package com.demobanking.controller;
 
 import com.demobanking.dto.UserDTO;
 import com.demobanking.service.IUserService;
+import com.google.protobuf.Message;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,7 +16,7 @@ import java.util.List;
 @AllArgsConstructor
 public class UserController {
     private IUserService userService;
-    private final KafkaTemplate<String, Object> template;
+    private final KafkaTemplate<String, Message> template;
 
     @GetMapping("/{id}")
     public ResponseEntity<UserDTO> getUser(@PathVariable Long id) {

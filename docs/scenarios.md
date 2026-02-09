@@ -56,6 +56,19 @@
 5. The saga orchestrator either approves or reject the `Account`.
 6. The saga orchestrator creates an `Account` in the `ACCOUNT_CREATED` state.
 
+#### Steps
+- `OPEN_ACCOUNT`
+- `VALIDATE_USER`
+- `CONFIRM_ACCOUNT`
+- `REJECT_ACCOUNT`
+
+### Saga Status
+- `STARTED`
+- `PROCESSING`
+- `FAILED`
+- `COMPENSATING`
+- `COMPLETED`
+
 ### Create Transaction Flow
 
 1. The `Transaction Service` receives `POST /transactions` request and creates the `Create Transaction` saga orchestrator.
