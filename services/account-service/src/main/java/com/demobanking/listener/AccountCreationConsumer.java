@@ -13,8 +13,7 @@ public class AccountCreationConsumer {
     private final IAccountService accountService;
 
     @KafkaListener(topics = "CREATE_ACCOUNT_CMD",
-            groupId = "ACCOUNT_EVENT_GROUP",
-            containerFactory = "accountEventListenerFactory")
+            groupId = "ACCOUNT_EVENT_GROUP")
     public void onAccountCreateEvent(CreateAccountCommand createAccountCommand) {
         accountService.openAccount(createAccountCommand);
     }

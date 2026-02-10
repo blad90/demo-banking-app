@@ -22,10 +22,11 @@ public class UserValidateProducer {
         template.send("USER_VALIDATED_TOPIC", userValidatedEvent);
     }
 
-    public void publishUserNotValidated(boolean validated){
+    public void publishUserNotValidated(String sagaId){
         UserValidatedEvent userValidatedEvent = UserValidatedEvent.newBuilder()
                 .setUserId(0L)
-                .setValidated(validated)
+                .setSagaId(sagaId)
+                .setValidated(false)
                 .build();
         template.send("USER_NOT_VALIDATED_TOPIC", userValidatedEvent);
     }

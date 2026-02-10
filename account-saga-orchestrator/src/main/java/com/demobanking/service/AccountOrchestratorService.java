@@ -9,7 +9,6 @@ import com.demobanking.events.Users.ValidateUserCommand;
 import com.demobanking.events.Users.UserValidatedEvent;
 import com.demobanking.repository.AccSagaStateRepository;
 import com.demobanking.request.AccountRequest;
-import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.protobuf.Message;
 import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -67,6 +66,7 @@ public class AccountOrchestratorService implements IAccountOrchestratorService{
     public void onUserValidate(UserValidatedEvent event) {
         AccountSagaState accountSagaState = sagaStateRepository.findById(event.getSagaId()).orElseThrow();
         accountSagaState.setCurrentStep(AccountSagaStep.VALIDATE_USER);
+        accountSagaState.setAccountSagaStatus(AccountSagaStatus.PROCESSING);
         sagaStateRepository.save(accountSagaState);
 
         if(event.getValidated()){
@@ -78,6 +78,7 @@ public class AccountOrchestratorService implements IAccountOrchestratorService{
             // compensation logic
             IO.println("Compensating... [PENDING LOGIC]");
             accountSagaState.setCurrentStep(AccountSagaStep.REJECT_ACCOUNT);
+            accountSagaState.setAccountSagaStatus(AccountSagaStatus.FAILED);
             sagaStateRepository.save(accountSagaState);
             UserValidatedEvent userValidatedEvent = UserValidatedEvent.newBuilder()
                     .setSagaId(accountSagaState.getSagaId())

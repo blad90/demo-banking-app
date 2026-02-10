@@ -37,7 +37,7 @@ public class UserServiceImpl implements IUserService{
             UserDTO userDTO = UserMapper.mapToDTO(user);
             userValidateProducer.publishUserValidated(userDTO, validateUserCommand.getSagaId());
         } else{
-            userValidateProducer.publishUserNotValidated(validated);
+            userValidateProducer.publishUserNotValidated(validateUserCommand.getSagaId());
         }
     }
 
