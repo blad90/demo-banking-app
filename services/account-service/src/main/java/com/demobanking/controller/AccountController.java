@@ -41,6 +41,12 @@ public class AccountController {
         return new ResponseEntity<>(allAccounts, HttpStatus.OK);
     }
 
+    @GetMapping("/all/{customerId}")
+    public ResponseEntity<List<AccountDTO>> getAllAccountsByCustomerId(@PathVariable String customerId) {
+        List<AccountDTO> allAccounts = accountService.retrieveAllAccountsByCustomerId(customerId);
+        return new ResponseEntity<>(allAccounts, HttpStatus.OK);
+    }
+
     @PatchMapping("/update/{accountNumber}")
     public ResponseEntity<String> updateAccount(@PathVariable String accountNumber, @RequestBody AccountDTO accountDTO) {
 

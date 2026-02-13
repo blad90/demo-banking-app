@@ -11,6 +11,7 @@ import com.demobanking.utils.AccountMapper;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Collection;
 import java.util.List;
 
 @Service
@@ -88,6 +89,15 @@ public class AccountServiceImpl implements IAccountService{
     public List<AccountDTO> retrieveAllAccounts() {
         return accountRepository.findAll()
                 .stream()
+                .map(account -> AccountMapper.mapToDTO(0L, account))
+                .toList();
+    }
+
+    @Override
+    public List<AccountDTO> retrieveAllAccountsByCustomerId(String customerId) {
+        return accountRepository.findAccountsByCustomer(customerId)
+                .stream()
+                .flatMap(Collection::stream)
                 .map(account -> AccountMapper.mapToDTO(0L, account))
                 .toList();
     }

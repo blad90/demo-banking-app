@@ -16,4 +16,5 @@ public interface IAccountService {
     void reverseLogActivityAcc(Long id); // TODO: for simplicity as an example for now.
     AccountDTO retrieveAccountByAccNumber(String accountNumber);
     List<AccountDTO> retrieveAllAccounts();
+    List<AccountDTO> retrieveAllAccountsByCustomerId(String customerId);
 }
