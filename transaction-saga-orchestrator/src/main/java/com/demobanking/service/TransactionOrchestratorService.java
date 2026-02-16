@@ -79,6 +79,7 @@ public class TransactionOrchestratorService implements ITransactionOrchestratorS
                 .setSourceAccountNumber(transactionSagaState.getSourceAccountNumber())
                 .setDestinationAccountNumber(transactionSagaState.getDestinationAccountNumber())
                 .setAmount(String.valueOf(transactionSagaState.getAmount()))
+                .setDescription(transactionSagaState.getTransactionDescription())
                 .build();
         template.send("TRANSFER_CMD", transferCommand);
     }

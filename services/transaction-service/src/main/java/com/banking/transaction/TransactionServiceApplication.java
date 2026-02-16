@@ -10,8 +10,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
                 title = "Transaction Service API",
                 version = "v1",
                 description = "Transaction Endpoints"
-        ),
-        servers = @Server(url = "http://192.168.49.2:30080/app1", description = "API Gateway")
+        )
+        //, servers = @Server(url = "http://192.168.49.2:30080/app1", description = "API Gateway")
 )
 @SpringBootApplication
 public class TransactionServiceApplication {

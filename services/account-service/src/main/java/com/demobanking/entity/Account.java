@@ -1,9 +1,6 @@
 package com.demobanking.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -30,6 +27,8 @@ public class Account {
     private LocalDateTime accountCreationDate;
     @UpdateTimestamp
     private LocalDateTime accountLastUpdated;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "account_state")
     private AccountState accountState;
 
     public Account(String accountNumber, Long customer, String accountType, AccountState accountState) {

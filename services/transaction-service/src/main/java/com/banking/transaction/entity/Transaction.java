@@ -2,10 +2,7 @@ package com.banking.transaction.entity;
 
 import com.demobanking.events.Transactions.TransactionType;
 import com.demobanking.events.Transactions.TransactionState;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -31,14 +28,21 @@ public class Transaction {
     private BigDecimal transactionAmount;
     @CreationTimestamp
     private LocalDateTime transactionDate;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "type")
     private TransactionType type;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "transaction_state")
     private TransactionState transactionState;
 
-    public Transaction(UUID correlationId, String sourceAccountNumber, String destinationAccountNumber, String description, BigDecimal transactionAmount) {
+    public Transaction(UUID correlationId, String sourceAccountNumber,
+                       String destinationAccountNumber, String description,
+                       BigDecimal transactionAmount, TransactionType type) {
         this.correlationId = correlationId;
         this.sourceAccountNumber = sourceAccountNumber;
         this.destinationAccountNumber = destinationAccountNumber;
         this.description = description;
         this.transactionAmount = transactionAmount;
+        this.type = type;
     }
 }

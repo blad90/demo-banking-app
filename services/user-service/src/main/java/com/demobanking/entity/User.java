@@ -1,9 +1,6 @@
 package com.demobanking.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
@@ -24,5 +21,7 @@ public class User {
     private String address;
     private String phoneNumber;
     private String emailAddress;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "user_state")
     private UserState userState;
 }
