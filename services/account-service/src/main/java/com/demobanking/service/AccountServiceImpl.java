@@ -3,14 +3,19 @@ package com.demobanking.service;
 import com.demobanking.dto.AccountDTO;
 import com.demobanking.entity.Account;
 import com.demobanking.entity.AccountState;
+import com.demobanking.events.Accounts.UpdateAccountsBalancesCommand;
+import com.demobanking.events.Accounts.ValidateAccountCommand;
 import com.demobanking.events.Accounts.CreateAccountCommand;
+import com.demobanking.events.Users;
 import com.demobanking.exceptions.BankAccountNotFoundException;
 import com.demobanking.listener.AccountEventProducer;
 import com.demobanking.repository.IAccountRepository;
 import com.demobanking.utils.AccountMapper;
 import lombok.AllArgsConstructor;
+import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.List;
 
@@ -21,6 +26,22 @@ public class AccountServiceImpl implements IAccountService{
     private final IAccountRepository accountRepository;
     private final AccountEventProducer accountEventProducer;
 
+    @KafkaListener(
+            topics = "VALIDATE_ACCOUNT_CMD",
+            groupId = "ACCOUNT_EVENT_GROUP",
+            containerFactory = "validateAcctKafkaListenerContainerFactory")
+    public void onAccountValidate(ValidateAccountCommand validateAccountCommand)  {
+        boolean validated = accountRepository.findAccountByAccountNumber(validateAccountCommand.getAccountNumber()).isPresent();
+        Account account = accountRepository.findAccountByAccountNumber(validateAccountCommand.getAccountNumber()).orElse(null);
+
+        if(account != null) {
+            AccountDTO accountDTO = AccountMapper.mapToDTO(account.getCustomer(), account);
+            accountEventProducer.publishAccountValidated(validateAccountCommand.getSagaId(), account);
+        } else{
+            accountEventProducer.publishAccountNotValidated(validateAccountCommand.getSagaId());
+        }
+    }
+
     public void openAccount(CreateAccountCommand createAccountCommand) {
 
         Account newAccount = new Account(
@@ -28,9 +49,29 @@ public class AccountServiceImpl implements IAccountService{
                 createAccountCommand.getUserId(),
                 createAccountCommand.getAccountType(),
                 AccountState.ACCOUNT_CREATED);
-        newAccount.setBalance(0.00);
+        newAccount.setBalance(BigDecimal.valueOf(0.00));
         accountRepository.save(newAccount);
         accountEventProducer.publishAccountCreated(newAccount);
+    }
+
+    @Override
+    public void updateAccountsBalances(UpdateAccountsBalancesCommand updateAccountsBalancesCommand) {
+        Account sourceAccount = accountRepository.findAccountByAccountNumber(updateAccountsBalancesCommand.getSourceAccountNumber()).get();
+        Account destinationAccount = accountRepository.findAccountByAccountNumber(updateAccountsBalancesCommand.getDestinationAccountNumber()).get();
+        BigDecimal sourceBalance = sourceAccount.getBalance();
+        BigDecimal destinationBalance = destinationAccount.getBalance();
+
+        sourceAccount.setBalance(sourceBalance.subtract((new BigDecimal(updateAccountsBalancesCommand.getAmount()))));
+
+        destinationAccount.setBalance(destinationBalance.add((new BigDecimal(updateAccountsBalancesCommand.getAmount()))));
+
+        accountRepository.save(sourceAccount);
+        accountRepository.save(destinationAccount);
+
+        accountEventProducer.publishAccountsBalancesUpdated(
+                updateAccountsBalancesCommand.getSagaId(),
+                sourceAccount,
+                destinationAccount);
     }
 
     @Override

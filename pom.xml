@@ -25,6 +25,7 @@
         <module>services/fraud-screening</module>
         <module>services/transaction-service</module>
         <module>account-saga-orchestrator</module>
+        <module>transaction-saga-orchestrator</module>
         <module>serialization-schemas</module>
     </modules>
 

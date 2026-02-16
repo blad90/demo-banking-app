@@ -1,0 +1,5 @@
+package com.demobanking.entity;
+
+public enum TransactionSagaStep {
+    CREATE_TRANSACTION, VALIDATE_ORIGIN_ACCOUNT, CONFIRM_ORIGIN_ACCOUNT, REJECT_TRANSACTION, COMPLETE_TRANSACTION
+}

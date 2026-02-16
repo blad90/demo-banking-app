@@ -22,8 +22,24 @@ message CreateAccountCommand {
 enum AccountState {
   ACCOUNT_CREATED = 0;
   ACCOUNT_ACTIVE = 1;
-  ACCOUNT_FROZEN = 2;
-  ACCOUNT_INACTIVE = 3;
+  ACCOUNT_VALIDATED = 2;
+  ACCOUNT_NOT_VALIDATED = 3;
+  ACCOUNT_FROZEN = 4;
+  ACCOUNT_INACTIVE = 5;
+}
+
+// The Command: Transaction Orchestrator -> Account Service
+message ValidateAccountCommand {
+  string saga_id = 1;
+  string account_number = 2;
+}
+
+// The Event: Account Service -> Transaction Orchestrator
+message AccountValidatedEvent {
+  string saga_id = 1;
+  string account_number = 2;
+  bool validated = 3;
+  AccountState accountState = 4;
 }
 
 message AccountCreatedEvent {
@@ -36,4 +52,17 @@ message AccountCreatedEvent {
 message AccountRequest {
   int64 user_id = 1;
   string account_type = 2;
+}
+
+message UpdateAccountsBalancesCommand {
+  string saga_id = 1;
+  string source_account_number = 2;
+  string destination_account_number = 3;
+  string amount = 4;
+}
+
+message AccountsBalancesUpdatedEvent {
+  string saga_id = 1;
+  string source_account_number = 2;
+  string destination_account_number = 3;
 }

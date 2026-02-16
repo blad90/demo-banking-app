@@ -1,9 +1,9 @@
 package com.demobanking.config;
 
+import com.demobanking.events.Accounts.AccountsBalancesUpdatedEvent;
 import com.demobanking.events.Accounts.AccountValidatedEvent;
-import com.demobanking.events.Accounts.AccountCreatedEvent;
-import com.demobanking.events.Accounts.CreateAccountCommand;
-import com.demobanking.events.Users.UserValidatedEvent;
+import com.demobanking.events.Transactions.TransactionCreatedEvent;
+import com.demobanking.events.Transactions.CreateTransactionCommand;
 import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig;
 import io.confluent.kafka.serializers.protobuf.KafkaProtobufDeserializer;
 import io.confluent.kafka.serializers.protobuf.KafkaProtobufDeserializerConfig;
@@ -29,59 +29,40 @@ public class KafkaConsumerConfig {
     private String schemaRegistryUrl;
 
     @Bean
-    public ConsumerFactory<String, CreateAccountCommand> consumerFactory() {
+    public ConsumerFactory<String, CreateTransactionCommand> consumerFactory() {
         Map<String, Object> props = new HashMap<>();
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
         props.put(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, schemaRegistryUrl);
-        props.put(ConsumerConfig.GROUP_ID_CONFIG, "account-orchestrator-group");
+        props.put(ConsumerConfig.GROUP_ID_CONFIG, "transaction-orchestrator-group");
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, KafkaProtobufDeserializer.class);
-        props.put(KafkaProtobufDeserializerConfig.SPECIFIC_PROTOBUF_VALUE_TYPE, CreateAccountCommand.class);
+        props.put(KafkaProtobufDeserializerConfig.SPECIFIC_PROTOBUF_VALUE_TYPE, CreateTransactionCommand.class);
 
         return new DefaultKafkaConsumerFactory<>(props);
     }
 
     @Bean
-    public ConcurrentKafkaListenerContainerFactory<String, CreateAccountCommand> kafkaListenerContainerFactory() {
-        ConcurrentKafkaListenerContainerFactory<String, CreateAccountCommand> factory =
+    public ConcurrentKafkaListenerContainerFactory<String, CreateTransactionCommand> kafkaListenerContainerFactory() {
+        ConcurrentKafkaListenerContainerFactory<String, CreateTransactionCommand> factory =
                 new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(consumerFactory());
         return factory;
     }
 
     @Bean
-    public ConsumerFactory<String, UserValidatedEvent> userEventConsumerFactory() {
+    public ConsumerFactory<String, AccountValidatedEvent> accountEventConsumerFactory() {
         Map<String, Object> props = new HashMap<>();
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, KafkaProtobufDeserializer.class);
         props.put(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, "http://localhost:8085");
-        props.put(KafkaProtobufDeserializerConfig.SPECIFIC_PROTOBUF_VALUE_TYPE, UserValidatedEvent.class);
+        props.put(KafkaProtobufDeserializerConfig.SPECIFIC_PROTOBUF_VALUE_TYPE, AccountValidatedEvent.class);
         return new DefaultKafkaConsumerFactory<>(props);
     }
 
     @Bean
-    public ConcurrentKafkaListenerContainerFactory<String, UserValidatedEvent> userEventListenerFactory() {
-        ConcurrentKafkaListenerContainerFactory<String, UserValidatedEvent> factory =
-                new ConcurrentKafkaListenerContainerFactory<>();
-        factory.setConsumerFactory(userEventConsumerFactory());
-        return factory;
-    }
-
-    @Bean
-    public ConsumerFactory<String, AccountCreatedEvent> accountEventConsumerFactory() {
-        Map<String, Object> props = new HashMap<>();
-        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
-        props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
-        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, KafkaProtobufDeserializer.class);
-        props.put(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, "http://localhost:8085");
-        props.put(KafkaProtobufDeserializerConfig.SPECIFIC_PROTOBUF_VALUE_TYPE, AccountCreatedEvent.class);
-        return new DefaultKafkaConsumerFactory<>(props);
-    }
-
-    @Bean
-    public ConcurrentKafkaListenerContainerFactory<String, AccountCreatedEvent> accountEventListenerFactory() {
-        ConcurrentKafkaListenerContainerFactory<String, AccountCreatedEvent> factory =
+    public ConcurrentKafkaListenerContainerFactory<String, AccountValidatedEvent> accountEventListenerFactory() {
+        ConcurrentKafkaListenerContainerFactory<String, AccountValidatedEvent> factory =
                 new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(accountEventConsumerFactory());
         return factory;
@@ -105,4 +86,43 @@ public class KafkaConsumerConfig {
         factory.setConsumerFactory(accountValidatedEventConsumerFactory());
         return factory;
     }
+
+    @Bean
+    public ConsumerFactory<String, TransactionCreatedEvent> transactionEventConsumerFactory() {
+        Map<String, Object> props = new HashMap<>();
+        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
+        props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
+        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, KafkaProtobufDeserializer.class);
+        props.put(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, "http://localhost:8085");
+        props.put(KafkaProtobufDeserializerConfig.SPECIFIC_PROTOBUF_VALUE_TYPE, TransactionCreatedEvent.class);
+        return new DefaultKafkaConsumerFactory<>(props);
+    }
+
+    @Bean
+    public ConcurrentKafkaListenerContainerFactory<String, TransactionCreatedEvent> transactionEventListenerFactory() {
+        ConcurrentKafkaListenerContainerFactory<String, TransactionCreatedEvent> factory =
+                new ConcurrentKafkaListenerContainerFactory<>();
+        factory.setConsumerFactory(transactionEventConsumerFactory());
+        return factory;
+    }
+
+    @Bean
+    public ConsumerFactory<String, AccountsBalancesUpdatedEvent> accsBalancesUpdatedEventConsumerFactory() {
+        Map<String, Object> props = new HashMap<>();
+        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
+        props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
+        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, KafkaProtobufDeserializer.class);
+        props.put(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, "http://localhost:8085");
+        props.put(KafkaProtobufDeserializerConfig.SPECIFIC_PROTOBUF_VALUE_TYPE, AccountsBalancesUpdatedEvent.class);
+        return new DefaultKafkaConsumerFactory<>(props);
+    }
+
+    @Bean
+    public ConcurrentKafkaListenerContainerFactory<String, AccountsBalancesUpdatedEvent> accsBalancesUpdatedEventListenerFactory() {
+        ConcurrentKafkaListenerContainerFactory<String, AccountsBalancesUpdatedEvent> factory =
+                new ConcurrentKafkaListenerContainerFactory<>();
+        factory.setConsumerFactory(accsBalancesUpdatedEventConsumerFactory());
+        return factory;
+    }
+
 }

@@ -26,7 +26,7 @@
   - description
   - transactionAmount
   - transactionDate
-  - type (DEBIT, CREDIT)
+  - type (DEBIT, CREDIT, TRANSFER)
   - transactionState (TRAN_INITIATED, TRAN_PROCESSING, TRAN_COMPLETED, TRAN_REJECTED, TRAN_CANCELLED)
 ---
 ## Services
@@ -56,13 +56,13 @@
 5. The saga orchestrator either approves or reject the `Account`.
 6. The saga orchestrator creates an `Account` in the `ACCOUNT_CREATED` state.
 
-#### Steps
+##### Opening Account Steps
 - `OPEN_ACCOUNT`
 - `VALIDATE_USER`
 - `CONFIRM_ACCOUNT`
 - `REJECT_ACCOUNT`
 
-### Saga Status
+#### Opening Account Saga Status
 - `STARTED`
 - `PROCESSING`
 - `FAILED`
@@ -73,7 +73,14 @@
 
 1. The `Transaction Service` receives `POST /transactions` request and creates the `Create Transaction` saga orchestrator.
 2. The saga orchestrator creates a `Transaction` in the `TRAN_INITIATED` state.
-3. It then sends a `Reserve Credit` command to the `Account Service`.
-4. The `Account Service` tries to reserve credit.
+3. It validates the account by sending the `Validate Account` command to the `Account Service`.
+4. The `Account Service` tries to validate the account before continuing the transaction.
 5. It then back a reply message indicating the outcome.
 6. The saga orchestrator either approves or reject the `Transaction`.
+7. It validates if the transaction type is `Transfer`.
+
+#### Create Transaction Steps
+- `CREATE_TRANSACTION`
+- `VALIDATE_ORIGIN_ACCOUNT`
+- `REJECT_TRANSACTION`
+- `COMPLETE_TRANSACTION`

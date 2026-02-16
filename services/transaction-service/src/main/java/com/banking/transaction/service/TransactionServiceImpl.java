@@ -2,13 +2,17 @@ package com.banking.transaction.service;
 
 import com.banking.transaction.dto.TransactionDTO;
 import com.banking.transaction.entity.Transaction;
-import com.banking.transaction.entity.TransactionState;
-import com.banking.transaction.entity.TransactionType;
+import com.banking.transaction.listener.TransactionEventProducer;
 import com.banking.transaction.repository.ITransactionRepository;
 import com.banking.transaction.utils.TransactionMapper;
+import com.demobanking.events.Transactions.TransactionState;
+import com.demobanking.events.Transactions.TransactionType;
+import com.demobanking.events.Transactions.TransferCommand;
+import com.demobanking.events.Transactions.CreateTransactionCommand;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
@@ -16,15 +20,36 @@ import java.util.UUID;
 @AllArgsConstructor
 public class TransactionServiceImpl implements ITransactionService{
 
+    private final TransactionEventProducer transactionEventProducer;
     private ITransactionRepository transactionRepository;
 
     @Override
-    public void createTransaction(TransactionDTO transactionDTO, TransactionType type) {
-        Transaction newTransaction = TransactionMapper.mapToEntity(transactionDTO);
-        newTransaction.setTransactionState(TransactionState.TRAN_INITIATED);
-        newTransaction.setType(type);
+    public void createTransaction(CreateTransactionCommand createTransactionCommand) {
+//        Transaction newTransaction = new Transaction(
+//                createTransactionCommand.getCorrelationId(),
+//                createTransactionCommand.getDescription(),
+//                createTransactionCommand.getA
+//        )
+//        newTransaction.setTransactionState(TransactionState.TRAN_INITIATED);
+//        newTransaction.setType(type);
+
+//        transactionRepository.save(newTransaction);
+    }
+
+    @Override
+    public void transfer(TransferCommand transferCommand) {
+
+        Transaction newTransaction = new Transaction(
+                UUID.fromString(transferCommand.getCorrelationId()),
+                transferCommand.getSourceAccountNumber(),
+                transferCommand.getDestinationAccountNumber(),
+                transferCommand.getDescription(),
+                new BigDecimal(transferCommand.getAmount()));
+        newTransaction.setTransactionState(TransactionState.TRAN_PROCESSING);
 
         transactionRepository.save(newTransaction);
+
+        transactionEventProducer.publishTransactionCreated(newTransaction);
     }
 
     @Override

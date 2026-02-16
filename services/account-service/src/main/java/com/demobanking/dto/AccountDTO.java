@@ -3,6 +3,7 @@ package com.demobanking.dto;
 import com.demobanking.entity.AccountState;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 @Getter
 @Setter
@@ -13,7 +14,7 @@ public class AccountDTO {
     private Long id;
     private String accountNumber;
     private Long customer;
-    private Double balance;
+    private BigDecimal balance;
     private String accountType;
     private LocalDateTime accountCreationDate;
     private LocalDateTime accountLastUpdated;

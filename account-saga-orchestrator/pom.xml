@@ -45,7 +45,7 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-kafka</artifactId>
-            <version>4.0.1</version>   <!-- or omit version if using dependency management -->
+            <version>4.0.1</version>   <!-- if using dependency management it can be ommited -->
         </dependency>
 
         <dependency>

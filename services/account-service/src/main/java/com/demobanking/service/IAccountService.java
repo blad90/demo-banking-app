@@ -1,6 +1,7 @@
 package com.demobanking.service;
 
 import com.demobanking.dto.AccountDTO;
+import com.demobanking.events.Accounts.UpdateAccountsBalancesCommand;
 import com.demobanking.events.Accounts.CreateAccountCommand;
 
 import java.util.List;
@@ -8,6 +9,7 @@ import java.util.List;
 
 public interface IAccountService {
     void openAccount(CreateAccountCommand createAccountCommand);
+    void updateAccountsBalances(UpdateAccountsBalancesCommand updateAccountsBalancesCommand);
     void updateAccount(String accountNumber, AccountDTO accountDTO);
     void enableAccount(String accountNumber, AccountDTO accountDTO);
     void freezeAccount(String accountNumber, AccountDTO accountDTO);

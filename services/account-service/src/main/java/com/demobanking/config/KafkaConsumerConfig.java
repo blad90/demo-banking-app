@@ -1,5 +1,7 @@
 package com.demobanking.config;
 
+import com.demobanking.events.Accounts.UpdateAccountsBalancesCommand;
+import com.demobanking.events.Accounts.ValidateAccountCommand;
 import com.demobanking.events.Accounts.CreateAccountCommand;
 import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig;
 import io.confluent.kafka.serializers.protobuf.KafkaProtobufDeserializer;
@@ -25,7 +27,7 @@ public class KafkaConsumerConfig {
     private String schemaRegistryUrl;
 
     @Bean
-    public ConsumerFactory<String, CreateAccountCommand> consumerFactory() {
+    public ConsumerFactory<String, CreateAccountCommand> createAcctConsumerFactory() {
         Map<String, Object> props = new HashMap<>();
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
         props.put(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, schemaRegistryUrl);
@@ -38,10 +40,52 @@ public class KafkaConsumerConfig {
     }
 
     @Bean
-    public ConcurrentKafkaListenerContainerFactory<String, CreateAccountCommand> kafkaListenerContainerFactory() {
+    public ConcurrentKafkaListenerContainerFactory<String, CreateAccountCommand> createAcctKafkaListenerContainerFactory() {
         ConcurrentKafkaListenerContainerFactory<String, CreateAccountCommand> factory =
                 new ConcurrentKafkaListenerContainerFactory<>();
-        factory.setConsumerFactory(consumerFactory());
+        factory.setConsumerFactory(createAcctConsumerFactory());
+        return factory;
+    }
+
+    @Bean
+    public ConsumerFactory<String, ValidateAccountCommand> validateAcctConsumerFactory() {
+        Map<String, Object> props = new HashMap<>();
+        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
+        props.put(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, schemaRegistryUrl);
+        props.put(ConsumerConfig.GROUP_ID_CONFIG, "account-service-group");
+        props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
+        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, KafkaProtobufDeserializer.class);
+        props.put(KafkaProtobufDeserializerConfig.SPECIFIC_PROTOBUF_VALUE_TYPE, ValidateAccountCommand.class);
+
+        return new DefaultKafkaConsumerFactory<>(props);
+    }
+
+    @Bean
+    public ConcurrentKafkaListenerContainerFactory<String, ValidateAccountCommand> validateAcctKafkaListenerContainerFactory() {
+        ConcurrentKafkaListenerContainerFactory<String, ValidateAccountCommand> factory =
+                new ConcurrentKafkaListenerContainerFactory<>();
+        factory.setConsumerFactory(validateAcctConsumerFactory());
+        return factory;
+    }
+
+    @Bean
+    public ConsumerFactory<String, UpdateAccountsBalancesCommand> updateAcctsBalanceConsumerFactory() {
+        Map<String, Object> props = new HashMap<>();
+        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
+        props.put(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, schemaRegistryUrl);
+        props.put(ConsumerConfig.GROUP_ID_CONFIG, "account-service-group");
+        props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
+        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, KafkaProtobufDeserializer.class);
+        props.put(KafkaProtobufDeserializerConfig.SPECIFIC_PROTOBUF_VALUE_TYPE, UpdateAccountsBalancesCommand.class);
+
+        return new DefaultKafkaConsumerFactory<>(props);
+    }
+
+    @Bean
+    public ConcurrentKafkaListenerContainerFactory<String, UpdateAccountsBalancesCommand> updateAcctsBalanceKafkaListenerContainerFactory() {
+        ConcurrentKafkaListenerContainerFactory<String, UpdateAccountsBalancesCommand> factory =
+                new ConcurrentKafkaListenerContainerFactory<>();
+        factory.setConsumerFactory(updateAcctsBalanceConsumerFactory());
         return factory;
     }
 }

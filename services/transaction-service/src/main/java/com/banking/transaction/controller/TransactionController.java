@@ -1,10 +1,7 @@
 package com.banking.transaction.controller;
 
 import com.banking.transaction.dto.TransactionDTO;
-import com.banking.transaction.entity.Transaction;
-import com.banking.transaction.entity.TransactionType;
 import com.banking.transaction.service.ITransactionService;
-import com.banking.transaction.utils.TransactionMapper;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,13 +16,6 @@ import java.util.UUID;
 public class TransactionController {
 
     private ITransactionService transactionService;
-
-    @PostMapping("/create/{type}")
-    public ResponseEntity<String> createTransaction(@RequestBody TransactionDTO transactionDTO,
-                                                    @PathVariable TransactionType type) {
-        transactionService.createTransaction(transactionDTO, type);
-        return new ResponseEntity<>("Transaction created", HttpStatus.CREATED);
-    }
 
     @GetMapping("/{id}")
     public ResponseEntity<TransactionDTO> getTransactionById(@PathVariable UUID id) {

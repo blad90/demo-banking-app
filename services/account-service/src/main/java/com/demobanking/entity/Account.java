@@ -8,6 +8,7 @@ import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
@@ -23,7 +24,7 @@ public class Account {
     private Long id;
     private String accountNumber;
     private Long customer;
-    private Double balance;
+    private BigDecimal balance;
     private String accountType;
     @CreationTimestamp
     private LocalDateTime accountCreationDate;
