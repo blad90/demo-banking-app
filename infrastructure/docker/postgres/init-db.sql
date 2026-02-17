@@ -7,3 +7,5 @@ SELECT 'CREATE DATABASE accounts_db'
 WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = 'accounts_db')\gexec
 SELECT 'CREATE DATABASE transactions_db'
 WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = 'transactions_db')\gexec
+SELECT 'CREATE DATABASE keycloak_db'
+    WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = 'keycloak_db')\gexec

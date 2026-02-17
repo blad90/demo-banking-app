@@ -1,10 +1,30 @@
-async function getTransactions(){
-    const res = await fetch('http://localhost:8083/transactions/all', { cache: 'force-cache'});
-    if(!res.ok){
-        throw new Error('Failed to fetch transactions');
+import { auth } from "@/app/lib/auth"
+import { redirect } from "next/navigation"
+
+
+  async function getTransactions() {
+    const session = await auth()
+
+  if (!session) {
+    redirect("/login")
+  }
+    const res = await fetch(
+      "http://localhost:8083/transactions/all",
+      {
+        cache: "no-store",
+        headers: {
+          Authorization: `Bearer ${session?.accessToken}`,
+        },
+      }
+    )
+
+    if (!res.ok) {
+      throw new Error("Failed to fetch transactions")
     }
-    return res.json();
-}
+
+    return res.json()
+  }
+  
 export default async function Page(){
     const transactions = await getTransactions();
 
