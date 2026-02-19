@@ -24,4 +24,5 @@ public class User {
     @Enumerated(EnumType.STRING)
     @Column(name = "user_state")
     private UserState userState;
+    private String userSessionId;
 }

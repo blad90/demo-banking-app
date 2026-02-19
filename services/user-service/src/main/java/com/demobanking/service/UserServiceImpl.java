@@ -9,21 +9,60 @@ import com.demobanking.exceptions.UserNotFoundException;
 import com.demobanking.messaging.UserValidateProducer;
 import com.demobanking.repository.IUserRepository;
 import com.demobanking.utils.UserMapper;
-import com.google.protobuf.Message;
+import jakarta.ws.rs.core.Response;
 import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+import org.keycloak.admin.client.Keycloak;
+import org.keycloak.admin.client.resource.UsersResource;
+import org.keycloak.representations.idm.CredentialRepresentation;
+import org.keycloak.representations.idm.UserRepresentation;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.annotation.KafkaListener;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+
 @Service
 @AllArgsConstructor
+@NoArgsConstructor
 public class UserServiceImpl implements IUserService{
 
+    @Autowired
     private IUserRepository userRepository;
     private UserValidateProducer userValidateProducer;
-    private final KafkaTemplate<String, Message> template;
+    @Autowired
+    private Keycloak keycloakAdminClient;
+
+    @Value("${keycloak.realm}")
+    private String realm;
+
+    public String createUser(UserDTO userDTO) {
+        UserRepresentation user = new UserRepresentation();
+        user.setEnabled(true);
+        user.setUsername(userDTO.getUserSessionDTO().getUsername());
+        user.setEmail(userDTO.getEmailAddress());
+        user.setFirstName(userDTO.getFirstName());
+        user.setLastName(userDTO.getLastName());
+        user.setRealmRoles(List.of("USER"));
+
+        CredentialRepresentation credential = new CredentialRepresentation();
+        credential.setTemporary(false);
+        credential.setType(CredentialRepresentation.PASSWORD);
+        credential.setValue(userDTO.getUserSessionDTO().getPassword());
+
+        user.setCredentials(Collections.singletonList(credential));
+        UsersResource usersResource = keycloakAdminClient.realm(realm).users();
+
+        try (Response response = usersResource.create(user)) {
+            if (response.getStatusInfo().getFamily() != Response.Status.Family.SUCCESSFUL) {
+                System.err.println("Failed to create user: " + response.getStatusInfo().getReasonPhrase());
+            }
+            return usersResource.searchByUsername(userDTO.getUserSessionDTO().getUsername(), true).getFirst().getId();
+        }
+    }
 
     @KafkaListener(
             topics = "VALIDATE_USER_CMD")
@@ -48,7 +87,10 @@ public class UserServiceImpl implements IUserService{
 
         if(userExistsWithNationalId) throw new UserAlreadyExistsException(userDTO.getNationalId());
 
-        User user = UserMapper.mapToEntity(userDTO);
+        String userSessionId = createUser(userDTO);
+
+        User user = UserMapper.mapToEntity(userDTO, userSessionId);
+
         userRepository.save(user);
     }
 
@@ -119,7 +161,8 @@ public class UserServiceImpl implements IUserService{
                         user.getAddress(),
                         user.getPhoneNumber(),
                         user.getEmailAddress(),
-                        user.getUserState()
+                        user.getUserState(),
+                        user.getUserSessionId()
                 )
         ).toList();
     }

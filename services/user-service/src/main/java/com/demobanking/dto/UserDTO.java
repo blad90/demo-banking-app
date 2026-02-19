@@ -17,6 +17,8 @@ public class UserDTO {
     private String phoneNumber;
     private String emailAddress;
     private UserState userState;
+    private UserSessionDTO userSessionDTO;
+    private String userSessionId;
 
     public UserDTO(String firstName, String lastName, String alias, String nationalId,
                    String address, String phoneNumber, String emailAddress) {
@@ -27,5 +29,18 @@ public class UserDTO {
         this.address = address;
         this.phoneNumber = phoneNumber;
         this.emailAddress = emailAddress;
+    }
+
+    public UserDTO(Long id, String firstName, String lastName, String alias, String nationalId, String address, String phoneNumber, String emailAddress, UserState userState, String userSessionId) {
+        this.id = id;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.alias = alias;
+        this.nationalId = nationalId;
+        this.address = address;
+        this.phoneNumber = phoneNumber;
+        this.emailAddress = emailAddress;
+        this.userState = userState;
+        this.userSessionId = userSessionId;
     }
 }

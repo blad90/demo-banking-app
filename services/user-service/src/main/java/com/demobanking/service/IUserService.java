@@ -8,6 +8,7 @@ import java.util.Optional;
 
 
 public interface IUserService {
+    String createUser(UserDTO userDTO);
     void registerUser(UserDTO userDTO);
     void updateUser(Long id, UserDTO userDTO);
     void enableUser(Long id, UserDTO userDTO);

@@ -1,5 +1,5 @@
 async function getCustomers(){
-    const res = await fetch('http://localhost:8081/users/all', { cache: 'force-cache'});
+    const res = await fetch('http://localhost:8081/users/all', { cache: 'no-cache'});
     if(!res.ok){
         throw new Error('Failed to fetch customers');
     }

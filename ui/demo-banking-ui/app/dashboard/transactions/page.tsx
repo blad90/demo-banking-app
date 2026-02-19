@@ -3,7 +3,7 @@ import { redirect } from "next/navigation"
 
 
   async function getTransactions() {
-    const session = await auth()
+  const session = await auth();
 
   if (!session) {
     redirect("/login")

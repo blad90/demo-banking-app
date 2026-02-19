@@ -17,10 +17,11 @@ public class UserMapper {
         userDTO.setEmailAddress(user.getEmailAddress());
         userDTO.setPhoneNumber(user.getPhoneNumber());
         userDTO.setUserState(user.getUserState());
+        userDTO.setUserSessionId(user.getUserSessionId());
         return userDTO;
     }
 
-    public static User mapToEntity(UserDTO userDTO) {
+    public static User mapToEntity(UserDTO userDTO, String userSessionId) {
         User user = new User();
         //user.setId(userDTO.getId());
         user.setFirstName(userDTO.getFirstName());
@@ -31,6 +32,7 @@ public class UserMapper {
         user.setEmailAddress(userDTO.getEmailAddress());
         user.setPhoneNumber(userDTO.getPhoneNumber());
         user.setUserState(UserState.USER_CREATED);
+        user.setUserSessionId(userSessionId);
 
         return user;
     }

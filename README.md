@@ -42,3 +42,5 @@ Spring Boot microservices, Kafka, OpenTelemetry tracing, Docker and Terraform.
 ### Databases
 - At the beginning, in order to create the database for each service, run: \
   `kubectl create configmap postgres-init-db --from-file=infrastructure/docker/postgres/init-db.sql`
+- For accessing postgres container: \
+  `docker exec -it postgres bash` then `psql -U postgres`

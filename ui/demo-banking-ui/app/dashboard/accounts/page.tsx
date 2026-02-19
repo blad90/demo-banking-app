@@ -1,7 +1,7 @@
 
 
 async function getAccounts(){
-    const res = await fetch('http://localhost:8082/accounts/all', { cache: 'force-cache'});
+    const res = await fetch('http://localhost:8082/accounts/all', { cache: 'no-cache'});
     if(!res.ok){
         throw new Error('Failed to fetch accounts');
     }

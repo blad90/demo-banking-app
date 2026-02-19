@@ -2,11 +2,9 @@ package com.demobanking.controller;
 
 import com.demobanking.dto.UserDTO;
 import com.demobanking.service.IUserService;
-import com.google.protobuf.Message;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,7 +14,6 @@ import java.util.List;
 @AllArgsConstructor
 public class UserController {
     private IUserService userService;
-    private final KafkaTemplate<String, Message> template;
 
     @GetMapping("/{id}")
     public ResponseEntity<UserDTO> getUser(@PathVariable Long id) {
@@ -33,7 +30,7 @@ public class UserController {
     @PostMapping("/create")
     public ResponseEntity<String> createUser(@RequestBody UserDTO userDTO) {
         userService.registerUser(userDTO);
-        return new ResponseEntity<>("User created successfully", HttpStatus.CREATED);
+        return new ResponseEntity<>("Customer created successfully", HttpStatus.CREATED);
     }
 
     @PatchMapping("/update/{id}")
