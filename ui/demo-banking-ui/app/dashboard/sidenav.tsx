@@ -1,11 +1,12 @@
 import Link from 'next/link';
 import NavLinks from '@/app/dashboard/nav-links';
-import AcmeLogo from '@/app/ui/ob-logo';
-import { PowerIcon } from '@heroicons/react/24/outline';
 import OBLogo from '@/app/ui/ob-logo';
 import LogoutButton from '../logout/logout-button';
+import { auth } from '../lib/auth';
 
-export default function SideNav() {
+
+export default async function SideNav() {
+  const session = await auth();
   return (
     <div className="flex h-full flex-col px-3 py-4 md:px-2">
       <Link
@@ -18,10 +19,16 @@ export default function SideNav() {
       </Link>
       <div className="flex grow flex-row justify-between space-x-2 md:flex-col md:space-x-0 md:space-y-2">
         <NavLinks />
-        <div className="hidden h-auto w-full grow rounded-md bg-gray-50 md:block"></div>
-        <form>
-          <LogoutButton/>
-        </form>
+        <div className="hidden h-auto w-full grow rounded-md bg-gray-50 md:block">
+          {session ? (
+          <form>
+            <strong>Logged in as:</strong> {session.user?.name}<LogoutButton />
+          </form>
+        ) : (
+          <a href="/login">Sign In</a>
+        )}
+        </div>
+        
       </div>
     </div>
   );

@@ -1,21 +1,15 @@
+import AccountsTable from "@/app/ui/accounts/accounts-table";
+import TableRowSkeleton from "@/app/ui/skeletons";
+import { Suspense } from "react";
+import {getAccounts} from "@/app/lib/data";
 
-
-async function getAccounts(){
-    const res = await fetch('http://localhost:8082/accounts/all', { cache: 'no-cache'});
-    if(!res.ok){
-        throw new Error('Failed to fetch accounts');
-    }
-    return res.json();
-}
 export default async function Page(){
     const accounts = await getAccounts();
 
     return <main>
-        <h1>Accounts</h1>
-        <ul>
-            {accounts.map((account: any) => (
-                <li key={account.id}>{account.accountNumber}</li>
-            ))}
-        </ul>
+        <h1 className="text-3xl font-bold">Accounts</h1>
+        <Suspense fallback={<TableRowSkeleton />}>
+            <AccountsTable accounts={accounts}/>
+        </Suspense>
     </main>
 }

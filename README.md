@@ -44,3 +44,7 @@ Spring Boot microservices, Kafka, OpenTelemetry tracing, Docker and Terraform.
   `kubectl create configmap postgres-init-db --from-file=infrastructure/docker/postgres/init-db.sql`
 - For accessing postgres container: \
   `docker exec -it postgres bash` then `psql -U postgres`
+
+### Other commands
+- For running each service outside any IDE using development profile: \
+  `java -Xms64m -Xmx256m -jar [SERVICE_NAME].jar --spring.profiles.active=dev`
