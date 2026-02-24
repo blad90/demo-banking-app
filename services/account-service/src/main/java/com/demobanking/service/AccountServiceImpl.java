@@ -6,12 +6,13 @@ import com.demobanking.entity.AccountState;
 import com.demobanking.events.Accounts.UpdateAccountsBalancesCommand;
 import com.demobanking.events.Accounts.ValidateAccountCommand;
 import com.demobanking.events.Accounts.CreateAccountCommand;
-import com.demobanking.events.Users;
 import com.demobanking.exceptions.BankAccountNotFoundException;
 import com.demobanking.listener.AccountEventProducer;
 import com.demobanking.repository.IAccountRepository;
 import com.demobanking.utils.AccountMapper;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 
@@ -132,6 +133,20 @@ public class AccountServiceImpl implements IAccountService{
                 .stream()
                 .map(account -> AccountMapper.mapToDTO(0L, account))
                 .toList();
+    }
+
+    @Override
+    public Page<AccountDTO> findAllAccounts(Pageable pageable) {
+        return accountRepository
+                .findAll(pageable)
+                .map(account -> AccountMapper.mapToDTO(0L, account));
+    }
+
+    @Override
+    public Page<AccountDTO> findAllFilteredAccounts(String query, Pageable pageable) {
+        return accountRepository
+                .findAllByAccountNumberContainingIgnoreCase(query, pageable)
+                .map(account -> AccountMapper.mapToDTO(0L, account));
     }
 
     @Override

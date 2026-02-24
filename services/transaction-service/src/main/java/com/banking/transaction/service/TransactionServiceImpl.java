@@ -10,6 +10,8 @@ import com.demobanking.events.Transactions.TransactionType;
 import com.demobanking.events.Transactions.TransferCommand;
 import com.demobanking.events.Transactions.CreateTransactionCommand;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -66,6 +68,19 @@ public class TransactionServiceImpl implements ITransactionService{
         return transactionRepository.findAll()
                 .stream().map(TransactionMapper::mapToDTO)
                 .toList();
+    }
+
+    @Override
+    public Page<TransactionDTO> findAllTransactions(Pageable pageable) {
+        return transactionRepository.findAll(pageable)
+                .map(TransactionMapper::mapToDTO);
+    }
+
+    @Override
+    public Page<TransactionDTO> findAllFilteredTransactions(String description, Pageable pageable) {
+        return transactionRepository
+                .findAllByDescriptionContainingIgnoreCase(description, pageable)
+                .map(TransactionMapper::mapToDTO);
     }
 
     @Override

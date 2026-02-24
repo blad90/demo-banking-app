@@ -4,6 +4,10 @@ import com.demobanking.dto.AccountDTO;
 import com.demobanking.events.Accounts.AccountRequest;
 import com.demobanking.service.IAccountService;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -38,6 +42,22 @@ public class AccountController {
     @GetMapping("/all")
     public ResponseEntity<List<AccountDTO>> getAllAccounts() {
         List<AccountDTO> allAccounts = accountService.retrieveAllAccounts();
+        return new ResponseEntity<>(allAccounts, HttpStatus.OK);
+    }
+
+    @GetMapping("/page/all")
+    public ResponseEntity<Page<AccountDTO>> getAllAccountsPageable(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "id") String sort) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sort));
+        Page<AccountDTO> allAccounts = accountService.findAllAccounts(pageable);
+        return new ResponseEntity<>(allAccounts, HttpStatus.OK);
+    }
+
+    @GetMapping("/page/all/search")
+    public ResponseEntity<Page<AccountDTO>> getAllAccountsPageable(Pageable pageable, @RequestParam String query) {
+        Page<AccountDTO> allAccounts = accountService.findAllFilteredAccounts(query, pageable);
         return new ResponseEntity<>(allAccounts, HttpStatus.OK);
     }
 

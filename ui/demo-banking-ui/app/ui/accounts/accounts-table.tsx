@@ -1,7 +1,16 @@
+import { getAccountsByPage, getFilteredAccounts } from "@/app/lib/data";
 import { Account } from "@/types/account";
 
 
-export default async function AccountsTable({ accounts }: { accounts: Account[] }) {
+export default async function AccountsTable({
+  query,
+  currentPage,
+}: {
+  query: string;
+  currentPage: number;
+}) {
+  // const accounts = await getFilteredAccounts(query, currentPage - 1);
+  const accounts = await getAccountsByPage(currentPage - 1, 10, '');
     //await new Promise((resolve) => setTimeout(resolve, 2000)); //TODO: for testing purposes, added a small delay.
     return (
         <div className="overflow-x-auto shadow-md sm:rounded-lg">
@@ -32,7 +41,7 @@ export default async function AccountsTable({ accounts }: { accounts: Account[] 
           </tr>
         </thead>
         <tbody className="bg-white divide-y divide-gray-200">
-          {accounts.map((account: any) => (
+          {accounts.content.map((account: any) => (
             <tr key={account.id} className="hover:bg-gray-50">
               <td className="px-6 py-4 whitespace-nowrap">
                 <div className="text-sm font-medium text-gray-900">{account.accountNumber}</div>

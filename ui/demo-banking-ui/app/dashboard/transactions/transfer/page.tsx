@@ -48,10 +48,12 @@ export default function TransferPage(){
                 <form onSubmit={handleSubmit}>
                     <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
                         <div className="sm:col-span-4">
-                            <label className="block text-sm/6 font-medium text-gray-900">Source Account</label>
+                            
                             <div className="mt-2">
+                                <label htmlFor="sourceAccountInput" className="block text-sm/6 font-medium text-gray-900">Source Account</label>
                                 <div className="flex items-center rounded-md bg-white pl-3 outline-1 -outline-offset-1 outline-gray-300 focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-indigo-600">
                                     <input
+                                    id="sourceAccountInput"
                                     className="block min-w-0 grow bg-white py-1.5 pr-3 pl-1 text-base text-gray-900 placeholder:text-gray-300 focus:outline-none sm:text-sm/6" 
                                     type="text"
                                     value={sourceAccountNumber}
@@ -64,11 +66,12 @@ export default function TransferPage(){
                     </div>
 
                     <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-                        <div className="sm:col-span-4">
-                            <label className="block text-sm/6 font-medium text-gray-900">Destination Account</label>
+                        <div className="sm:col-span-4">  
                             <div className="mt-2">
+                                <label htmlFor="destinationAccountInput" className="block text-sm/6 font-medium text-gray-900">Destination Account</label>
                                 <div className="flex items-center rounded-md bg-white pl-3 outline-1 -outline-offset-1 outline-gray-300 focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-indigo-600">
                                     <input
+                                    id="destinationAccountInput"
                                     className="block min-w-0 grow bg-white py-1.5 pr-3 pl-1 text-base text-gray-900 placeholder:text-gray-300 focus:outline-none sm:text-sm/6" 
                                     type="text"
                                     value={destinationAccountNumber}
@@ -82,10 +85,11 @@ export default function TransferPage(){
 
                     <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
                         <div className="sm:col-span-4">
-                            <label className="block text-sm/6 font-medium text-gray-900">Transaction Amount</label>
                             <div className="mt-2">
+                                <label htmlFor="transactionAmountInput" className="block text-sm/6 font-medium text-gray-900">Transaction Amount</label>
                                 <div className="flex items-center rounded-md bg-white pl-3 outline-1 -outline-offset-1 outline-gray-300 focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-indigo-600">
                                     <input
+                                    id="transactionAmountInput"
                                     className="block min-w-0 grow bg-white py-1.5 pr-3 pl-1 text-base text-gray-900 placeholder:text-gray-300 focus:outline-none sm:text-sm/6" 
                                     type="text"
                                     value={amount}
@@ -99,10 +103,11 @@ export default function TransferPage(){
 
                     <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
                         <div className="sm:col-span-4">
-                            <label className="block text-sm/6 font-medium text-gray-900">Transaction Description</label>
                             <div className="mt-2">
+                                <label htmlFor="transactionDescriptionInput" className="block text-sm/6 font-medium text-gray-900">Transaction Description</label>
                                 <div className="flex items-center rounded-md bg-white pl-3 outline-1 -outline-offset-1 outline-gray-300 focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-indigo-600">
                                     <input
+                                    id="transactionDescriptionInput"
                                     className="block min-w-0 grow bg-white py-1.5 pr-3 pl-1 text-base text-gray-900 placeholder:text-gray-300 focus:outline-none sm:text-sm/6" 
                                     type="text"
                                     value={description}
@@ -116,10 +121,11 @@ export default function TransferPage(){
 
                     <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
                         <div className="sm:col-span-4">
-                            <label className="block text-sm/6 font-medium text-gray-900">Transaction Type</label>
                             <div className="mt-2">
+                                <label htmlFor="transactionTypeInput" className="block text-sm/6 font-medium text-gray-900">Transaction Type</label>
                                 <div className="flex items-center rounded-md bg-white pl-3 outline-1 -outline-offset-1 outline-gray-300 focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-indigo-600">
                                     <input
+                                    id="transactionTypeInput"
                                     className="block min-w-0 grow bg-white py-1.5 pr-3 pl-1 text-base text-gray-900 placeholder:text-gray-300 focus:outline-none sm:text-sm/6" 
                                     type="text"
                                     value={transactionType}

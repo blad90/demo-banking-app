@@ -32,6 +32,7 @@ public class UserServiceImpl implements IUserService{
 
     @Autowired
     private IUserRepository userRepository;
+    @Autowired
     private UserValidateProducer userValidateProducer;
     @Autowired
     private Keycloak keycloakAdminClient;
@@ -68,7 +69,6 @@ public class UserServiceImpl implements IUserService{
             topics = "VALIDATE_USER_CMD")
     public void onUserValidate(ValidateUserCommand validateUserCommand)  {
         boolean validated = userRepository.findById(validateUserCommand.getUserId()).isPresent();
-
 
         User user = userRepository.findById(validateUserCommand.getUserId()).orElse(null);
 

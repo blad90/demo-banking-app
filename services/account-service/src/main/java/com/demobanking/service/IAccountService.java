@@ -3,6 +3,8 @@ package com.demobanking.service;
 import com.demobanking.dto.AccountDTO;
 import com.demobanking.events.Accounts.UpdateAccountsBalancesCommand;
 import com.demobanking.events.Accounts.CreateAccountCommand;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -18,5 +20,7 @@ public interface IAccountService {
     void reverseLogActivityAcc(Long id); // TODO: for simplicity as an example for now.
     AccountDTO retrieveAccountByAccNumber(String accountNumber);
     List<AccountDTO> retrieveAllAccounts();
+    Page<AccountDTO> findAllAccounts(Pageable pageable);
+    Page<AccountDTO> findAllFilteredAccounts(String query, Pageable pageable);
     List<AccountDTO> retrieveAllAccountsByCustomerId(String customerId);
 }
