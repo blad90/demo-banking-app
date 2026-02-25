@@ -15,3 +15,16 @@ message UserValidatedEvent {
   int64 user_id = 2;
   bool validated = 3;
 }
+
+message UserNotValidatedEvent {
+  string saga_id = 1;
+  int64 user_id = 2;
+  bool validated = 3;
+  FailureReason failureReason = 4;
+  string message = 5;
+}
+
+enum FailureReason {
+  USER_NOT_FOUND = 0;
+  USER_ALREADY_EXISTS = 1;
+}

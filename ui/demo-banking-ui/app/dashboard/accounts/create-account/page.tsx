@@ -1,12 +1,19 @@
 'use client';
 
+import { useRouter } from "next/navigation";
 import { useState, FormEvent } from "react";
 
+
+
 export default function CreateAccountPage(){
+    const router = useRouter();
+    
     const [userId, setUserId] = useState(0);
     const [accountType, setAccountType] = useState('');
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState('');
+    const [status, setStatus] = useState('');
+    const [sagaId, setSagaId] = useState('');
 
     async function handleSubmit(e: FormEvent){
         e.preventDefault();
@@ -21,9 +28,13 @@ export default function CreateAccountPage(){
             });
 
             const data = await res.json();
-            console.log(data);
+            
+            setSagaId(data.sagaId);
+            setStatus("STARTED");
+
+            pollStatus(data.sagaId);
+
             if(!res.ok) throw new Error(data.error || 'Failed');
-            setMessage('Account created successfully!');
             setUserId(0);
             setAccountType(''); 
         } catch(err: any){
@@ -32,6 +43,40 @@ export default function CreateAccountPage(){
             setLoading(false);
         }
     }
+
+    async function pollStatus(id: string) {
+
+    try {
+    const response = await fetch(
+      `http://localhost:8087/orchestrator/saga/${id}`
+    );
+
+    if (response.status === 202) {
+      setStatus("PROCESSING");
+      setTimeout(() => pollStatus(id), 2000);
+      return;
+    }
+
+    if (response.status === 200) {
+      setStatus("ACCOUNT_CREATED");
+      setMessage("Account created successfully!");
+      setTimeout(() => {
+      router.push("/dashboard/accounts");
+    }, 2000);
+      return;
+    }
+
+    if (response.status === 404) {
+      setStatus("FAILED");
+      setMessage("Account creation failed. Error while validating the user.");
+      return;
+    }
+
+  } catch (error) {
+    setStatus("FAILED");
+    setMessage("Error while validating the user.");
+  }
+  }
     return(
             <div className="space-y-12">
                 <div className="border-b border-gray-900/10 pb-12">
@@ -76,7 +121,7 @@ export default function CreateAccountPage(){
                     </button>
                     </div>
                 </form>
-                {message && <p style={{color: message.includes('error') ? 'red' : 'green'}}> {message} </p>}
+                {message && <p style={{color: message.includes('Error') ? 'red' : 'green'}}> {message} </p>}
                 </div>
             </div>
         );

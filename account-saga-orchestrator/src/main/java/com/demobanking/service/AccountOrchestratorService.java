@@ -5,6 +5,7 @@ import com.demobanking.entity.AccountSagaStatus;
 import com.demobanking.entity.AccountSagaStep;
 import com.demobanking.events.Accounts.CreateAccountCommand;
 import com.demobanking.events.Accounts.AccountCreatedEvent;
+import com.demobanking.events.Users.UserNotValidatedEvent;
 import com.demobanking.events.Users.ValidateUserCommand;
 import com.demobanking.events.Users.UserValidatedEvent;
 import com.demobanking.repository.AccSagaStateRepository;
@@ -24,9 +25,10 @@ public class AccountOrchestratorService implements IAccountOrchestratorService{
     private final KafkaTemplate<String, Message> template;
     private final AccSagaStateRepository sagaStateRepository;
 
-    public AccountSagaState initiateAccountCreation(com.demobanking.request.AccountRequest accountRequest){
+    public String initiateAccountCreation(com.demobanking.request.AccountRequest accountRequest){
+        String sagaId = UUID.randomUUID().toString();
         AccountSagaState accountSagaState = new AccountSagaState(
-                UUID.randomUUID().toString(),
+                sagaId,
                 null, // account # not yet generated at the beginning of the process
                 accountRequest.getAccountType(),
                 accountRequest.getUserId(),
@@ -37,7 +39,11 @@ public class AccountOrchestratorService implements IAccountOrchestratorService{
         // Step 1 - Send command to validate user
         validateUser(accountSagaState.getSagaId(), accountRequest);
 
-        return accountSagaState;
+        return sagaId;
+    }
+
+    public AccountSagaState retrieveSagaStateById(String sagaId){
+        return sagaStateRepository.findById(sagaId).orElseThrow();
     }
 
     public void validateUser(String sagaId, AccountRequest accountRequest){
@@ -73,27 +79,18 @@ public class AccountOrchestratorService implements IAccountOrchestratorService{
             accountSagaState.setCurrentStep(AccountSagaStep.CONFIRM_ACCOUNT);
             sagaStateRepository.save(accountSagaState);
             createAccount(accountSagaState);
-
-        } else {
-            // compensation logic
-            IO.println("Compensating... [PENDING LOGIC]");
-            accountSagaState.setCurrentStep(AccountSagaStep.REJECT_ACCOUNT);
-            accountSagaState.setAccountSagaStatus(AccountSagaStatus.FAILED);
-            sagaStateRepository.save(accountSagaState);
-            UserValidatedEvent userValidatedEvent = UserValidatedEvent.newBuilder()
-                    .setSagaId(accountSagaState.getSagaId())
-                    .setUserId(0L)
-                    .setValidated(false)
-                    .build();
-            template.send("USER_NOT_VALIDATED_TOPIC", userValidatedEvent);
         }
     }
 
     @KafkaListener(
             topics = "USER_NOT_VALIDATED_TOPIC",
-            groupId = "account-orchestrator-group")
-    public void onUserNotValidate(UserValidatedEvent userValidatedEvent) {
-        IO.println("USER NOT VALIDATED! : " + userValidatedEvent);
+            containerFactory = "userFailEventListenerFactory",
+            groupId = "user-service-group")
+    public void onUserNotValidate(UserNotValidatedEvent userNotValidatedEvent) {
+        AccountSagaState accountSagaState = sagaStateRepository.findById(userNotValidatedEvent.getSagaId()).orElseThrow();
+        accountSagaState.setCurrentStep(AccountSagaStep.REJECT_ACCOUNT);
+        accountSagaState.setAccountSagaStatus(AccountSagaStatus.FAILED);
+        sagaStateRepository.save(accountSagaState);
     }
 
     @KafkaListener(

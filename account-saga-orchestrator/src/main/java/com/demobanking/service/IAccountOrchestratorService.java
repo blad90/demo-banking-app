@@ -4,5 +4,6 @@ import com.demobanking.entity.AccountSagaState;
 import com.demobanking.request.AccountRequest;
 
 public interface IAccountOrchestratorService {
-    AccountSagaState initiateAccountCreation(AccountRequest accountRequest);
+    String initiateAccountCreation(AccountRequest accountRequest);
+    AccountSagaState retrieveSagaStateById(String sagaId);
 }

@@ -68,15 +68,12 @@ public class UserServiceImpl implements IUserService{
     @KafkaListener(
             topics = "VALIDATE_USER_CMD")
     public void onUserValidate(ValidateUserCommand validateUserCommand)  {
-        boolean validated = userRepository.findById(validateUserCommand.getUserId()).isPresent();
-
-        User user = userRepository.findById(validateUserCommand.getUserId()).orElse(null);
-
-        if(user != null) {
+        try {
+            User user = userRepository.findById(validateUserCommand.getUserId()).orElseThrow(() -> new UserNotFoundException(validateUserCommand.getUserId()));
             UserDTO userDTO = UserMapper.mapToDTO(user);
             userValidateProducer.publishUserValidated(userDTO, validateUserCommand.getSagaId());
-        } else{
-            userValidateProducer.publishUserNotValidated(validateUserCommand.getSagaId());
+        } catch (UserNotFoundException e){
+            userValidateProducer.publishUserNotValidated(validateUserCommand.getSagaId(), e.getMessage());
         }
     }
 

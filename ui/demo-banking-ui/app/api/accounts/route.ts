@@ -16,12 +16,11 @@ export async function POST(request: NextRequest){
     const result = await response.json();
 
     if (!response.ok) {
-      return new Response(result.text, { status: response.status });
+      return new Response(result, { status: response.status });
     }
     
 
-    return NextResponse.json(
-        { status: response.status });
+    return NextResponse.json(result, { status: response.status });
     
     } catch(error){
         return NextResponse.json({ sucess: false, error: (error as Error).message }, { status: 500 });

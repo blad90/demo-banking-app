@@ -49,8 +49,8 @@ public class AccountController {
     public ResponseEntity<Page<AccountDTO>> getAllAccountsPageable(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "id") String sort) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by(sort));
+            @RequestParam(defaultValue = "accountCreationDate") String accountCreationDate) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(accountCreationDate).descending());
         Page<AccountDTO> allAccounts = accountService.findAllAccounts(pageable);
         return new ResponseEntity<>(allAccounts, HttpStatus.OK);
     }

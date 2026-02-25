@@ -1,6 +1,8 @@
 package com.demobanking.messaging;
 
 import com.demobanking.dto.UserDTO;
+import com.demobanking.events.Users;
+import com.demobanking.events.Users.UserNotValidatedEvent;
 import com.demobanking.events.Users.UserValidatedEvent;
 import com.google.protobuf.Message;
 import lombok.RequiredArgsConstructor;
@@ -22,12 +24,14 @@ public class UserValidateProducer {
         template.send("USER_VALIDATED_TOPIC", userValidatedEvent);
     }
 
-    public void publishUserNotValidated(String sagaId){
-        UserValidatedEvent userValidatedEvent = UserValidatedEvent.newBuilder()
+    public void publishUserNotValidated(String sagaId, String message){
+        UserNotValidatedEvent userNotValidatedEvent = UserNotValidatedEvent.newBuilder()
                 .setUserId(0L)
                 .setSagaId(sagaId)
                 .setValidated(false)
+                .setFailureReason(Users.FailureReason.USER_NOT_FOUND)
+                .setMessage(message)
                 .build();
-        template.send("USER_NOT_VALIDATED_TOPIC", userValidatedEvent);
+        template.send("USER_NOT_VALIDATED_TOPIC", userNotValidatedEvent);
     }
 }
