@@ -32,14 +32,15 @@ public class AccountServiceImpl implements IAccountService{
             groupId = "ACCOUNT_EVENT_GROUP",
             containerFactory = "validateAcctKafkaListenerContainerFactory")
     public void onAccountValidate(ValidateAccountCommand validateAccountCommand)  {
-        boolean validated = accountRepository.findAccountByAccountNumber(validateAccountCommand.getAccountNumber()).isPresent();
-        Account account = accountRepository.findAccountByAccountNumber(validateAccountCommand.getAccountNumber()).orElse(null);
 
-        if(account != null) {
+        try{
+            Account account = accountRepository
+                    .findAccountByAccountNumber(validateAccountCommand.getAccountNumber())
+                    .orElseThrow(() -> new BankAccountNotFoundException(validateAccountCommand.getAccountNumber()));
             AccountDTO accountDTO = AccountMapper.mapToDTO(account.getCustomer(), account);
-            accountEventProducer.publishAccountValidated(validateAccountCommand.getSagaId(), account);
-        } else{
-            accountEventProducer.publishAccountNotValidated(validateAccountCommand.getSagaId());
+            accountEventProducer.publishAccountValidated(validateAccountCommand.getSagaId(), accountDTO);
+        } catch (BankAccountNotFoundException e){
+            accountEventProducer.publishAccountNotValidated(validateAccountCommand.getSagaId(), e.getMessage());
         }
     }
 

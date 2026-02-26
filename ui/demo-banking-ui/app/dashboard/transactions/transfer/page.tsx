@@ -1,8 +1,11 @@
 'use client';
 
+import { useRouter } from "next/navigation";
 import { useState, FormEvent } from "react";
 
 export default function TransferPage(){
+    const router = useRouter();
+
     const [sourceAccountNumber, setSourceAccountNumber] = useState('');
     const [destinationAccountNumber, setDestinationAccountNumber] = useState('');
     const [amount, setAmount] = useState(0.00);
@@ -12,6 +15,8 @@ export default function TransferPage(){
     const [transactionState, setTransactionState] = useState('');
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState('');
+    const [status, setStatus] = useState('');
+    const [sagaId, setSagaId] = useState('');
 
     async function handleSubmit(e: FormEvent){
         e.preventDefault();
@@ -27,8 +32,12 @@ export default function TransferPage(){
 
             const data = await res.json();
 
+            setSagaId(data.sagaId);
+            setStatus("STARTED");
+
+            pollStatus(data.sagaId);
+
             if(!res.ok) throw new Error(data.error || 'Failed');
-            setMessage('Transaction processed successfully!');
             setSourceAccountNumber('');
             setDestinationAccountNumber('');
             setAmount(0);
@@ -42,6 +51,41 @@ export default function TransferPage(){
             setLoading(false);
         }
     }
+
+    async function pollStatus(id: string) {
+
+    try {
+    const response = await fetch(
+      `http://localhost:8088/orchestrator/saga/${id}`
+    );
+
+    if (response.status === 202) {
+      setStatus("PROCESSING");
+      setTimeout(() => pollStatus(id), 2000);
+      return;
+    }
+
+    if (response.status === 200) {
+      setStatus("TRANSACTION_PROCESSED");
+      setMessage('Transaction processed successfully!');
+      setTimeout(() => {
+      router.push("/dashboard/transactions");
+    }, 2000);
+      return;
+    }
+
+    if (response.status === 404) {
+      setStatus("FAILED");
+      setMessage("Transaction processing failed. Error while validating the account.");
+      return;
+    }
+
+  } catch (error) {
+    setStatus("FAILED");
+    setMessage("Error");
+  }
+  }
+
     return(
             <div className="space-y-12">
                 <div className="border-b border-gray-900/10 pb-12">
@@ -143,7 +187,7 @@ export default function TransferPage(){
                     </button>
                     </div>
                 </form>
-                {message && <p style={{color: message.includes('error') ? 'red' : 'green'}}> {message} </p>}
+                {message && <p style={{color: message.includes('Error') ? 'red' : 'green'}}> {message} </p>}
                 </div>
             </div>
         );

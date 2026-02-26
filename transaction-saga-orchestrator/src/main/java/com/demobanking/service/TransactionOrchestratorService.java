@@ -3,6 +3,7 @@ package com.demobanking.service;
 import com.demobanking.entity.TransactionSagaState;
 import com.demobanking.entity.TransactionSagaStatus;
 import com.demobanking.entity.TransactionSagaStep;
+import com.demobanking.events.Accounts.AccountNotValidatedEvent;
 import com.demobanking.events.Accounts.UpdateAccountsBalancesCommand;
 import com.demobanking.events.Accounts.AccountValidatedEvent;
 import com.demobanking.events.Accounts.ValidateAccountCommand;
@@ -28,9 +29,10 @@ public class TransactionOrchestratorService implements ITransactionOrchestratorS
     private final KafkaTemplate<String, Message> template;
     private final TransacSagaStateRepository sagaStateRepository;
 
-    public TransactionSagaState initiateTransaction(TransactionRequest transactionRequest){
+    public String initiateTransaction(TransactionRequest transactionRequest){
+        String sagaId = UUID.randomUUID().toString();
         TransactionSagaState transactionSagaState = new TransactionSagaState(
-                UUID.randomUUID().toString(),
+                sagaId,
                 UUID.randomUUID().toString(),
                 transactionRequest.getSourceAccountNumber(),
                 transactionRequest.getDestinationAccountNumber(),
@@ -44,7 +46,11 @@ public class TransactionOrchestratorService implements ITransactionOrchestratorS
         // Step 1 - Send command to validate origin account
         validateAccount(transactionSagaState.getSagaId(), transactionRequest);
 
-        return transactionSagaState;
+        return sagaId;
+    }
+
+    public TransactionSagaState retrieveSagaStateById(String sagaId){
+        return sagaStateRepository.findById(sagaId).orElseThrow();
     }
 
     public void validateAccount(String sagaId, TransactionRequest transactionRequest){
@@ -98,28 +104,19 @@ public class TransactionOrchestratorService implements ITransactionOrchestratorS
             transactionSagaState.setCurrentStep(TransactionSagaStep.CONFIRM_ORIGIN_ACCOUNT);
             sagaStateRepository.save(transactionSagaState);
             createTransaction(transactionSagaState);
-
-        } else {
-            // compensation logic
-            IO.println("Compensating... [PENDING LOGIC]");
-            transactionSagaState.setCurrentStep(TransactionSagaStep.REJECT_TRANSACTION);
-            transactionSagaState.setTransactionSagaStatus(TransactionSagaStatus.FAILED);
-            sagaStateRepository.save(transactionSagaState);
-
-            AccountValidatedEvent accountValidatedEvent = AccountValidatedEvent.newBuilder()
-                    .setSagaId(transactionSagaState.getSagaId())
-                    .setAccountNumber("ACC NOT VALIDATED")
-                    .setValidated(false)
-                    .build();
-            template.send("ACCOUNT_NOT_VALIDATED_TOPIC", accountValidatedEvent);
         }
     }
 
     @KafkaListener(
             topics = "ACCOUNT_NOT_VALIDATED_TOPIC",
-            groupId = "transaction-orchestrator-group")
-    public void onAccountNotValidate(AccountValidatedEvent accountValidatedEvent) {
-        IO.println("ACCOUNT NOT VALIDATED! : " + accountValidatedEvent);
+            containerFactory = "accountNotValidatedEventListenerFactory",
+            groupId = "account-service-group")
+    public void onAccountNotValidate(AccountNotValidatedEvent accountNotValidatedEvent) {
+        TransactionSagaState transactionSagaState = sagaStateRepository.findById(accountNotValidatedEvent.getSagaId()).orElseThrow();
+        transactionSagaState.setCurrentStep(TransactionSagaStep.REJECT_TRANSACTION);
+        transactionSagaState.setTransactionSagaStatus(TransactionSagaStatus.FAILED);
+        sagaStateRepository.save(transactionSagaState);
+        IO.println("ACCOUNT NOT VALIDATED! : " + accountNotValidatedEvent);
     }
 
     @KafkaListener(

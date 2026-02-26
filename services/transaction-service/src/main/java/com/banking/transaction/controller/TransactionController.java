@@ -37,8 +37,8 @@ public class TransactionController {
     public ResponseEntity<Page<TransactionDTO>> getAllAccountsPageable(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "id") String sort) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by(sort));
+            @RequestParam(defaultValue = "transactionDate") String transactionDate) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(transactionDate));
         Page<TransactionDTO> allAccounts = transactionService.findAllTransactions(pageable);
         return new ResponseEntity<>(allAccounts, HttpStatus.OK);
     }

@@ -49,6 +49,19 @@ message AccountCreatedEvent {
   AccountState accountState = 4;
 }
 
+message AccountNotValidatedEvent {
+  string saga_id = 1;
+  int64 user_id = 2;
+  bool validated = 3;
+  FailureReason failureReason = 4;
+  string message = 5;
+}
+
+enum FailureReason {
+  ACCOUNT_NOT_FOUND = 0;
+  ACCOUNT_ALREADY_EXISTS = 1;
+}
+
 message AccountRequest {
   int64 user_id = 1;
   string account_type = 2;

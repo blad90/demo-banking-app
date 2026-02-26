@@ -1,5 +1,6 @@
 package com.demobanking.config;
 
+import com.demobanking.events.Accounts.AccountNotValidatedEvent;
 import com.demobanking.events.Accounts.AccountsBalancesUpdatedEvent;
 import com.demobanking.events.Accounts.AccountValidatedEvent;
 import com.demobanking.events.Transactions.TransactionCreatedEvent;
@@ -84,6 +85,25 @@ public class KafkaConsumerConfig {
         ConcurrentKafkaListenerContainerFactory<String, AccountValidatedEvent> factory =
                 new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(accountValidatedEventConsumerFactory());
+        return factory;
+    }
+
+    @Bean
+    public ConsumerFactory<String, AccountNotValidatedEvent> accountNotValidatedEventConsumerFactory() {
+        Map<String, Object> props = new HashMap<>();
+        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
+        props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
+        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, KafkaProtobufDeserializer.class);
+        props.put(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, "http://localhost:8085");
+        props.put(KafkaProtobufDeserializerConfig.SPECIFIC_PROTOBUF_VALUE_TYPE, AccountNotValidatedEvent.class);
+        return new DefaultKafkaConsumerFactory<>(props);
+    }
+
+    @Bean
+    public ConcurrentKafkaListenerContainerFactory<String, AccountNotValidatedEvent> accountNotValidatedEventListenerFactory() {
+        ConcurrentKafkaListenerContainerFactory<String, AccountNotValidatedEvent> factory =
+                new ConcurrentKafkaListenerContainerFactory<>();
+        factory.setConsumerFactory(accountNotValidatedEventConsumerFactory());
         return factory;
     }
 
