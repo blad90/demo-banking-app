@@ -48,3 +48,6 @@ Spring Boot microservices, Kafka, OpenTelemetry tracing, Docker and Terraform.
 ### Other commands
 - For running each service outside any IDE using development profile: \
   `java -Xms64m -Xmx256m -jar [SERVICE_NAME].jar --spring.profiles.active=dev`
+
+## License
+Licensed under the Apache License, Version 2.0. See [LICENSE](LICENSE) for details.
