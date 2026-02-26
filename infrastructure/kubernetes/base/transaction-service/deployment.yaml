@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: transaction-service
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: transaction-service
+  template:
+    metadata:
+      labels:
+        app: transaction-service
+    spec:
+      containers:
+        - name: transaction-service
+          image: transaction-service:latest
+          imagePullPolicy: IfNotPresent # TODO: ONLY FOR DEV ENVIRONMENT, NOT GOOD FOR PROD
+          ports:
+            - containerPort: 8083
+          env:
+                - name: SPRING_DATASOURCE_URL
+                  value: jdbc:postgresql://postgres:5432/transactions_db
+                - name: SPRING_DATASOURCE_USERNAME
+                  value: test
+                - name: SPRING_DATASOURCE_PASSWORD
+                  value: test
+                - name: SPRINGDOC_SWAGGER-UI_URL
+                  value: /v3/api-docs?service=transactions
+                - name: SPRINGDOC_SWAGGER-UI_CONFIG-URL
+                  value: /v3/api-docs/swagger-config?service=transactions

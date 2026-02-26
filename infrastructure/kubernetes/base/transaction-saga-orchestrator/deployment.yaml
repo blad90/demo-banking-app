@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: transaction-saga-orchestrator
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: transaction-saga-orchestrator
+  template:
+    metadata:
+      labels:
+        app: transaction-saga-orchestrator
+    spec:
+      containers:
+        - name: transaction-saga-orchestrator
+          image: transaction-saga-orchestrator:latest
+          imagePullPolicy: IfNotPresent # TODO: ONLY FOR DEV ENVIRONMENT, NOT GOOD FOR PROD
+          ports:
+            - containerPort: 8088
+          env:
+                - name: SPRING_DATASOURCE_URL
+                  value: jdbc:postgresql://postgres:5432/transaction_saga_states_db
+                - name: SPRING_DATASOURCE_USERNAME
+                  value: test
+                - name: SPRING_DATASOURCE_PASSWORD
+                  value: test
+                - name: SPRINGDOC_SWAGGER-UI_URL
+                  value: /v3/api-docs?service=transaction-saga-orchestrator
+                - name: SPRINGDOC_SWAGGER-UI_CONFIG-URL
+                  value: /v3/api-docs/swagger-config?service=transaction-saga-orchestrator

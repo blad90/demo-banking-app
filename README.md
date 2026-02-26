@@ -28,7 +28,7 @@ Spring Boot microservices, Kafka, OpenTelemetry tracing, Docker and Terraform.
 - `docker compose up [NAME]-service`
 
 ### Using minikube (Kubernetes)
-- To start minikube, use the command: `minikube start` 
+- To start minikube, use the command: `minikube start --driver=docker` 
 - To stop minikube, use the command: `minikube stop`
 - To apply any changes in deployment config: `kubectl apply -f infrastructure/kubernetes/base/[SERVICE_NAME]/deployment.yaml`
 - To apply any changes in service config: `kubectl apply -f infrastructure/kubernetes/base/[SERVICE_NAME]/service.yaml`
@@ -48,6 +48,10 @@ Spring Boot microservices, Kafka, OpenTelemetry tracing, Docker and Terraform.
 ### Other commands
 - For running each service outside any IDE using development profile: \
   `java -Xms64m -Xmx256m -jar [SERVICE_NAME].jar --spring.profiles.active=dev`
+  - To point the terminal to the Docker engine inside minikube for building images for microservices locally: \
+  `eval $(minikube docker-env)`
+  - To enable Headlamp for pods monitoring in Kubernetes, directly from official site:\
+  - `kubectl apply -f https://raw.githubusercontent.com/kubernetes-sigs/headlamp/main/kubernetes-headlamp.yaml`
 
 ## License
 Licensed under the Apache License, Version 2.0. See [LICENSE](LICENSE) for details.
