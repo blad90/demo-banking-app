@@ -48,7 +48,7 @@ public class TransactionServiceImpl implements ITransactionService{
                 transferCommand.getDescription(),
                 new BigDecimal(transferCommand.getAmount()),
                 TransactionType.TRANSFER);
-        newTransaction.setTransactionState(TransactionState.TRAN_COMPLETED);
+        newTransaction.setTransactionState(TransactionState.TRAN_PROCESSING);
 
         transactionRepository.save(newTransaction);
 

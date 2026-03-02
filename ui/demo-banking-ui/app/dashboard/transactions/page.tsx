@@ -16,12 +16,12 @@ export default async function Page(props: {
     const searchParams = await props.searchParams;
         const query = searchParams?.description || '';
         const currentPage = Number(searchParams?.page) || 1;
-        //const totalPages = await getAccountsPages(query);
+        //const totalPages = await getTransactionsPages(query);
         const totalPages = await getTransactionsPages(currentPage, 10, '');
 
     return <main>
         <div className="mt-4 flex items-center justify-between gap-2 md:mt-8">
-            <Search placeholder="Search accounts..." />
+            <Search placeholder="Search transactions..." />
             <Transfer/>
         </div>
         <h1 className="text-3xl font-bold">Transactions</h1>

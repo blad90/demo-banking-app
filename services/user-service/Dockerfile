@@ -1,20 +1,17 @@
+# ---------- BUILD STAGE ----------
 FROM maven:3.9-eclipse-temurin-25 AS build
 WORKDIR /app
 
-# Copies parent POM
-COPY pom.xml /app/parent-pom.xml
+# Copy entire project (all modules)
+COPY . .
 
-# Installs ONLY the parent POM (no modules)
-RUN mvn -f /app/parent-pom.xml -N clean install -DskipTests
+# Build only user-service + required modules
+RUN mvn -pl services/user-service -am clean package -DskipTests
 
-# Copies service code
-COPY services/user-service/pom.xml ./pom.xml
-COPY services/user-service/src ./src
-
-# Builds the service
-RUN mvn clean package -DskipTests
-
+# ---------- RUNTIME STAGE ----------
 FROM amazoncorretto:25-alpine
 WORKDIR /app
-COPY --from=build /app/target/*.jar user-service.jar
+
+COPY --from=build /app/services/user-service/target/*.jar user-service.jar
+
 ENTRYPOINT ["java","-jar","/app/user-service.jar"]

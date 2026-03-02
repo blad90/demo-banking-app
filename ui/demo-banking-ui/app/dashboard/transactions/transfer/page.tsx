@@ -172,9 +172,9 @@ export default function TransferPage(){
                                     id="transactionTypeInput"
                                     className="block min-w-0 grow bg-white py-1.5 pr-3 pl-1 text-base text-gray-900 placeholder:text-gray-300 focus:outline-none sm:text-sm/6" 
                                     type="text"
-                                    value={transactionType}
-                                    onChange={e => setTransactionType(e.target.value)}
-                                    required
+                                    value={"TRANSFER"}
+                                    onChange={e => setTransactionType("TRANSFER")}
+                                    disabled
                                     />
                                 </div>
                             </div>

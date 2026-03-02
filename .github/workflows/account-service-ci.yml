@@ -51,5 +51,5 @@ jobs:
         run: mvn clean package -DskipTests
 
       - name: Build Docker image
-        run: |
-          docker build -t demo/account-service:ci .
+        run:
+          docker build -f services/account-service/Dockerfile -t demo-bank/account-service:ci .
