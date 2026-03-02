@@ -52,4 +52,4 @@ jobs:
 
       - name: Build Docker image
         run: |
-          docker build -t demo/user-service:ci .
+          docker build -f services/user-service/Dockerfile -t demo-bank/user-service:ci .
