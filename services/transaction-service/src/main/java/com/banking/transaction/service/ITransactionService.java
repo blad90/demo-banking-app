@@ -11,7 +11,7 @@ import java.util.UUID;
 
 public interface ITransactionService {
     void createTransaction(CreateTransactionCommand createTransactionCommand);
-    void transfer(TransferCommand transferCommand);
+    void transfer(String sagaId, TransferCommand transferCommand);
     TransactionDTO retrieveTransactionById(UUID id);
     List<TransactionDTO> retrieveAllTransactions();
     Page<TransactionDTO> findAllTransactions(Pageable pageable);

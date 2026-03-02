@@ -39,7 +39,7 @@ public class TransactionServiceImpl implements ITransactionService{
     }
 
     @Override
-    public void transfer(TransferCommand transferCommand) {
+    public void transfer(String sagaId, TransferCommand transferCommand) {
 
         Transaction newTransaction = new Transaction(
                 UUID.fromString(transferCommand.getCorrelationId()),
@@ -48,11 +48,11 @@ public class TransactionServiceImpl implements ITransactionService{
                 transferCommand.getDescription(),
                 new BigDecimal(transferCommand.getAmount()),
                 TransactionType.TRANSFER);
-        newTransaction.setTransactionState(TransactionState.TRAN_PROCESSING);
+        newTransaction.setTransactionState(TransactionState.TRAN_COMPLETED);
 
         transactionRepository.save(newTransaction);
 
-        transactionEventProducer.publishTransactionCreated(newTransaction);
+        transactionEventProducer.publishTransactionCreated(sagaId, newTransaction);
     }
 
     @Override

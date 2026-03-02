@@ -41,7 +41,7 @@ public class TransactionOrchestratorController {
         return switch (transactionSagaState.getTransactionSagaStatus()) {
             case STARTED -> ResponseEntity.status(HttpStatus.ACCEPTED).body(transactionSagaState);
             case PROCESSING -> ResponseEntity.ok(transactionSagaState);
-            case FAILED -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(transactionSagaState);
+            case FAILED -> ResponseEntity.ok(transactionSagaState);
             case COMPENSATING -> ResponseEntity.status(HttpStatus.NO_CONTENT).body(transactionSagaState);
             case COMPLETED -> ResponseEntity.ok().body(transactionSagaState);
         };

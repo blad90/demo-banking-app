@@ -19,11 +19,12 @@ public class AccountEventProducer {
 
     private final KafkaTemplate<String, Message> template;
 
-    public void publishAccountCreated(Account account){
+    public void publishAccountCreated(String sagaId, Account account){
         AccountCreatedEvent accountCreatedEvent = AccountCreatedEvent.newBuilder()
                 .setAccountNumber(account.getAccountNumber())
                 .setUserId(account.getCustomer())
                 .setAccountState(AccountState.ACCOUNT_CREATED)
+                .setSagaId(sagaId)
                 .build();
         template.send("ACCOUNT_CREATED_EVENTS_TOPIC", account.getAccountNumber(), accountCreatedEvent);
     }
@@ -42,6 +43,7 @@ public class AccountEventProducer {
         AccountsBalancesUpdatedEvent accountsBalancesUpdatedEvent = AccountsBalancesUpdatedEvent.newBuilder()
                 .setSourceAccountNumber(sourceAccount.getAccountNumber())
                 .setDestinationAccountNumber(destinationAccount.getAccountNumber())
+                .setSagaId(sagaId)
                 .build();
         template.send("ACCOUNTS_BALANCES_UPDATED_EVENTS_TOPIC", sagaId, accountsBalancesUpdatedEvent);
     }

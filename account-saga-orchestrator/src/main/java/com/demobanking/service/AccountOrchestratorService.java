@@ -47,6 +47,11 @@ public class AccountOrchestratorService implements IAccountOrchestratorService{
     }
 
     public void validateUser(String sagaId, AccountRequest accountRequest){
+        AccountSagaState accountSagaState = sagaStateRepository.findById(sagaId).orElseThrow();
+        accountSagaState.setCurrentStep(AccountSagaStep.VALIDATE_USER);
+        accountSagaState.setAccountSagaStatus(AccountSagaStatus.PROCESSING);
+        sagaStateRepository.save(accountSagaState);
+
         ValidateUserCommand validateUserCommand =
                 ValidateUserCommand.newBuilder()
                         .setSagaId(sagaId)
@@ -71,13 +76,8 @@ public class AccountOrchestratorService implements IAccountOrchestratorService{
             containerFactory = "userEventListenerFactory", groupId = "user-service-group")
     public void onUserValidate(UserValidatedEvent event) {
         AccountSagaState accountSagaState = sagaStateRepository.findById(event.getSagaId()).orElseThrow();
-        accountSagaState.setCurrentStep(AccountSagaStep.VALIDATE_USER);
-        accountSagaState.setAccountSagaStatus(AccountSagaStatus.PROCESSING);
-        sagaStateRepository.save(accountSagaState);
 
         if(event.getValidated()){
-            accountSagaState.setCurrentStep(AccountSagaStep.CONFIRM_ACCOUNT);
-            sagaStateRepository.save(accountSagaState);
             createAccount(accountSagaState);
         }
     }
@@ -98,7 +98,9 @@ public class AccountOrchestratorService implements IAccountOrchestratorService{
             groupId = "account-orchestrator-group",
             containerFactory = "accountEventListenerFactory")
     public void onAccountCreation(AccountCreatedEvent event) {
-        IO.println(event);
-        IO.println("onAccountCreation!!!");
+        AccountSagaState accountSagaState = sagaStateRepository.findById(event.getSagaId()).orElseThrow();
+        accountSagaState.setCurrentStep(AccountSagaStep.CONFIRM_ACCOUNT);
+        accountSagaState.setAccountSagaStatus(AccountSagaStatus.COMPLETED);
+        sagaStateRepository.save(accountSagaState);
     }
 }

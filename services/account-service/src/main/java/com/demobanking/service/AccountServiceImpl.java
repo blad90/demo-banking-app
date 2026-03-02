@@ -53,7 +53,7 @@ public class AccountServiceImpl implements IAccountService{
                 AccountState.ACCOUNT_CREATED);
         newAccount.setBalance(BigDecimal.valueOf(0.00));
         accountRepository.save(newAccount);
-        accountEventProducer.publishAccountCreated(newAccount);
+        accountEventProducer.publishAccountCreated(createAccountCommand.getSagaId(),newAccount);
     }
 
     @Override

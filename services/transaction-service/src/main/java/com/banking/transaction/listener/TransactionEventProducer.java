@@ -15,7 +15,7 @@ public class TransactionEventProducer {
 
     private final KafkaTemplate<String, Message> template;
 
-    public void publishTransactionCreated(Transaction transaction){
+    public void publishTransactionCreated(String sagaId, Transaction transaction){
         TransactionCreatedEvent transactionCreatedEvent = TransactionCreatedEvent.newBuilder()
                 .setSourceAccountNumber(transaction.getSourceAccountNumber())
                 .setDestinationAccountNumber(transaction.getDestinationAccountNumber())
@@ -24,6 +24,7 @@ public class TransactionEventProducer {
                 .setTransactionState(TransactionState.TRAN_COMPLETED)
                 .setAmount(String.valueOf(transaction.getTransactionAmount()))
                 .setDescription(transaction.getDescription())
+                .setSagaId(sagaId)
                 .build();
         template.send("TRANSACTION_CREATED_EVENTS_TOPIC", String.valueOf(transaction.getId()), transactionCreatedEvent);
     }

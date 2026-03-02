@@ -23,6 +23,6 @@ public class TransactionCreationConsumer {
             groupId = "TRANSACTION_EVENT_GROUP",
             containerFactory = "transferKafkaListenerContainerFactory")
     public void onTransferEvent(TransferCommand transferCommand){
-        transactionService.transfer(transferCommand);
+        transactionService.transfer(transferCommand.getSagaId(), transferCommand);
     }
 }

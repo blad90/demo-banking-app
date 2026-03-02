@@ -44,7 +44,7 @@ public class TransactionOrchestratorService implements ITransactionOrchestratorS
         );
         sagaStateRepository.save(transactionSagaState);
         // Step 1 - Send command to validate origin account
-        validateAccount(transactionSagaState.getSagaId(), transactionRequest);
+        validateAccount(sagaId, transactionRequest);
 
         return sagaId;
     }
@@ -54,6 +54,11 @@ public class TransactionOrchestratorService implements ITransactionOrchestratorS
     }
 
     public void validateAccount(String sagaId, TransactionRequest transactionRequest){
+        TransactionSagaState transactionSagaState = sagaStateRepository.findById(sagaId).orElseThrow();
+        transactionSagaState.setCurrentStep(TransactionSagaStep.VALIDATE_ORIGIN_ACCOUNT);
+        transactionSagaState.setTransactionSagaStatus(TransactionSagaStatus.PROCESSING);
+        sagaStateRepository.save(transactionSagaState);
+
         ValidateAccountCommand validateAccountCommand =
                 ValidateAccountCommand.newBuilder()
                         .setSagaId(sagaId)
@@ -96,9 +101,6 @@ public class TransactionOrchestratorService implements ITransactionOrchestratorS
             groupId = "account-service-group")
     public void onAccountValidate(AccountValidatedEvent event) {
         TransactionSagaState transactionSagaState = sagaStateRepository.findById(event.getSagaId()).orElseThrow();
-        transactionSagaState.setCurrentStep(TransactionSagaStep.VALIDATE_ORIGIN_ACCOUNT);
-        transactionSagaState.setTransactionSagaStatus(TransactionSagaStatus.PROCESSING);
-        sagaStateRepository.save(transactionSagaState);
 
         if(event.getValidated()){
             transactionSagaState.setCurrentStep(TransactionSagaStep.CONFIRM_ORIGIN_ACCOUNT);
@@ -140,6 +142,11 @@ public class TransactionOrchestratorService implements ITransactionOrchestratorS
             groupId = "transaction-orchestrator-group",
             containerFactory = "transactionEventListenerFactory")
     public void onAccountsBalancesUpdated(TransactionCreatedEvent event) {
+        TransactionSagaState transactionSagaState = sagaStateRepository.findById(event.getSagaId()).orElseThrow();
+        transactionSagaState.setCurrentStep(TransactionSagaStep.COMPLETE_TRANSACTION);
+        transactionSagaState.setTransactionSagaStatus(TransactionSagaStatus.COMPLETED);
+        sagaStateRepository.save(transactionSagaState);
+
         IO.println(event);
         IO.println("ACCOUNTS WERE UPDATED!");
     }

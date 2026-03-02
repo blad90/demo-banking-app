@@ -40,7 +40,7 @@ public class AccountOrchestratorController {
         return switch (accountSagaState.getAccountSagaStatus()) {
             case STARTED -> ResponseEntity.status(HttpStatus.ACCEPTED).body(accountSagaState);
             case PROCESSING -> ResponseEntity.ok(accountSagaState);
-            case FAILED -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(accountSagaState);
+            case FAILED -> ResponseEntity.ok(accountSagaState);
             case COMPENSATING -> ResponseEntity.status(HttpStatus.NO_CONTENT).body(accountSagaState);
             case COMPLETED -> ResponseEntity.ok().body(accountSagaState);
         };
