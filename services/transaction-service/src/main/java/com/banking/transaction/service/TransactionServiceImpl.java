@@ -60,7 +60,8 @@ public class TransactionServiceImpl implements ITransactionService{
         Transaction existingTransaction = transactionRepository.findById(id).orElse(null);
 
         if(existingTransaction != null) transactionRepository.save(existingTransaction);
-        return TransactionMapper.mapToDTO(existingTransaction);
+        else return TransactionMapper.mapToDTO(existingTransaction);
+        return null;
     }
 
     @Override
