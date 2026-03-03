@@ -23,4 +23,5 @@ public interface IAccountService {
     Page<AccountDTO> findAllAccounts(Pageable pageable);
     Page<AccountDTO> findAllFilteredAccounts(String query, Pageable pageable);
     List<AccountDTO> retrieveAllAccountsByCustomerId(String customerId);
+    List<AccountDTO> retrieveAllAccountNumbers(List<String> accountNumbers);
 }

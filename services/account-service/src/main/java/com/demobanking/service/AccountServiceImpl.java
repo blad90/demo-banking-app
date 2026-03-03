@@ -158,4 +158,12 @@ public class AccountServiceImpl implements IAccountService{
                 .map(account -> AccountMapper.mapToDTO(0L, account))
                 .toList();
     }
+
+    @Override
+    public List<AccountDTO> retrieveAllAccountNumbers(List<String> accountNumbers) {
+        return accountRepository.findAllByAccountNumberIn(accountNumbers)
+                .stream()
+                .map(account -> AccountMapper.mapToDTO(0L,account))
+                .toList();
+    }
 }

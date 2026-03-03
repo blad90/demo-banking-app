@@ -1,5 +1,4 @@
-import { getTransactionsByPage } from "@/app/lib/data";
-
+import { getTransactionsByPage } from "@/app/services/transaction-service";
 
 export default async function TransactionsTable({
   description,
@@ -46,7 +45,8 @@ export default async function TransactionsTable({
                 <div className="text-sm text-gray-500">{transaction.sourceAccount}</div>
               </td>
               <td className="px-6 py-4 whitespace-nowrap">
-                <div className="text-sm text-gray-900">{transaction.destinationAccount}</div>
+                <div className="text-sm text-gray-900">{transaction.account.accountNumber}</div>
+                <div className="text-sm text-gray-500">{transaction.account.customer.firstName} {transaction.account.customer.lastName}</div>
               </td>
               <td className="px-6 py-4 whitespace-nowrap">
                 <div className="text-sm text-gray-900">{transaction.description}</div>

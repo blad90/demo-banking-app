@@ -1,10 +1,10 @@
 import AccountsTable from "@/app/ui/accounts/accounts-table";
 import TableRowSkeleton from "@/app/ui/skeletons";
 import { Suspense } from "react";
-import {getAccountsPages} from "@/app/lib/data";
 import Search from "@/app/ui/search";
 import { CreateAccount } from "@/app/ui/accounts/buttons";
 import Pagination from "@/app/ui/accounts/pagination";
+import { getAccountsPages } from "@/app/services/account-service";
 
 export default async function Page(props: {
   searchParams?: Promise<{

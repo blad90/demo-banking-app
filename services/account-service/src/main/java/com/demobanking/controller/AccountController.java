@@ -39,6 +39,11 @@ public class AccountController {
         return new ResponseEntity<>(retrievedAccount, HttpStatus.OK);
     }
 
+    @GetMapping
+    public ResponseEntity<List<AccountDTO>> getAllAccountNumbers(@RequestParam List<String> accountNumbers){
+        return ResponseEntity.ok(accountService.retrieveAllAccountNumbers(accountNumbers));
+    }
+
     @GetMapping("/all")
     public ResponseEntity<List<AccountDTO>> getAllAccounts() {
         List<AccountDTO> allAccounts = accountService.retrieveAllAccounts();

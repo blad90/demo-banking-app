@@ -19,4 +19,5 @@ public interface IUserService {
     void reverseLogActivity(Long userId); // TODO: for simplicity and placeholder
     Optional<UserDTO> retrieveUserById(Long id);
     List<UserDTO> retrieveAllUsers();
+    List<UserDTO> retrieveAllUserIds(List<Long> ids);
 }

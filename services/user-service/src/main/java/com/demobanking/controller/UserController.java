@@ -21,6 +21,11 @@ public class UserController {
         return new ResponseEntity<>(userDTO, HttpStatus.OK);
     }
 
+    @GetMapping
+    public ResponseEntity<List<UserDTO>> getAllUserIds(@RequestParam List<Long> ids){
+        return ResponseEntity.ok(userService.retrieveAllUserIds(ids));
+    }
+
     @GetMapping("/all")
     public ResponseEntity<List<UserDTO>> getAllUsers(){
         List<UserDTO> usersDTO = userService.retrieveAllUsers();

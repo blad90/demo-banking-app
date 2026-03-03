@@ -2,10 +2,10 @@
 import TransactionsTable from "@/app/ui/transactions/transactions-table";
 import { Suspense } from "react";
 import TableRowSkeleton from "@/app/ui/skeletons";
-import {getTransactionsPages} from "@/app/lib/data";
 import Pagination from "@/app/ui/transactions/pagination";
 import Search from "@/app/ui/search";
 import { Transfer } from "@/app/ui/accounts/buttons";
+import { getTransactionsPages } from "@/app/services/transaction-service";
   
 export default async function Page(props: {
   searchParams?: Promise<{

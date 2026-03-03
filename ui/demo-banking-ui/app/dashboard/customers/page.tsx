@@ -1,10 +1,4 @@
-async function getCustomers(){
-    const res = await fetch('http://localhost:8081/users/all', { cache: 'no-cache'});
-    if(!res.ok){
-        throw new Error('Failed to fetch customers');
-    }
-    return res.json();
-}
+import { getCustomers } from "@/app/services/user-service";
 
 export default async function Page(){
     const customers = await getCustomers();

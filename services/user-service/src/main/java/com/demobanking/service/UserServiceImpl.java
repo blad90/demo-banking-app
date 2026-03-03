@@ -163,4 +163,12 @@ public class UserServiceImpl implements IUserService{
                 )
         ).toList();
     }
+
+    @Override
+    public List<UserDTO> retrieveAllUserIds(List<Long> ids) {
+        return userRepository.findAllById(ids)
+                .stream()
+                .map(UserMapper::mapToDTO)
+                .toList();
+    }
 }

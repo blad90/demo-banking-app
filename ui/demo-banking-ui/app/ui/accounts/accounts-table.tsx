@@ -1,6 +1,4 @@
-import { getAccountsByPage, getFilteredAccounts } from "@/app/lib/data";
-import { Account } from "@/types/account";
-
+import { getAccountsByPage } from "@/app/services/account-service";
 
 export default async function AccountsTable({
   query,
@@ -48,7 +46,8 @@ export default async function AccountsTable({
                 <div className="text-sm text-gray-500">{account.accountNumber}</div>
               </td>
               <td className="px-6 py-4 whitespace-nowrap">
-                <div className="text-sm text-gray-900">{account.customer}</div>
+                <div className="text-sm text-gray-900">{account.customer.firstName} {account.customer.lastName}</div>
+                <div className="text-sm text-gray-500">{account.customer.nationalId}</div>
               </td>
               <td className="px-6 py-4 whitespace-nowrap">
                 <div className="text-sm text-gray-900">{account.balance}</div>
