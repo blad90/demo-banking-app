@@ -66,9 +66,14 @@ public class AccountController {
         return new ResponseEntity<>(allAccounts, HttpStatus.OK);
     }
 
-    @GetMapping("/all/{customerId}")
-    public ResponseEntity<List<AccountDTO>> getAllAccountsByCustomerId(@PathVariable String customerId) {
-        List<AccountDTO> allAccounts = accountService.retrieveAllAccountsByCustomerId(customerId);
+    @GetMapping("/page/all/{customerId}")
+    public ResponseEntity<Page<AccountDTO>> getAllAccountsByCustomerIdPageable(
+            @PathVariable Long customerId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "accountCreationDate") String accountCreationDate) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(accountCreationDate).descending());
+        Page<AccountDTO> allAccounts = accountService.findAllAccountsByCustomerId(customerId, pageable);
         return new ResponseEntity<>(allAccounts, HttpStatus.OK);
     }
 

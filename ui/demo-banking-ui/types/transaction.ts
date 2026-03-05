@@ -1,5 +1,6 @@
 export type Transaction = {
   correlationId: string;
+  customerId: number;
   sourceAccount: string;
   destinationAccount: string;
   transactionAmount: number;

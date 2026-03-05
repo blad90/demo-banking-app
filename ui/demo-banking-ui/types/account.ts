@@ -1,7 +1,7 @@
 export type Account = {
   id: number;
   accountNumber: string;
-  customer: number;
+  customerId: number;
   balance: number;
   accountType: string;
   accountCreationDate: Date;

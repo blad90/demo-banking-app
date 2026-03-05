@@ -1,6 +1,7 @@
 package com.demobanking.utils;
 
 import com.demobanking.dto.UserDTO;
+import com.demobanking.dto.UserSessionDTO;
 import com.demobanking.entity.User;
 import com.demobanking.entity.UserState;
 
@@ -18,12 +19,13 @@ public class UserMapper {
         userDTO.setPhoneNumber(user.getPhoneNumber());
         userDTO.setUserState(user.getUserState());
         userDTO.setUserSessionId(user.getUserSessionId());
+        userDTO.setUserSessionDTO(new UserSessionDTO());
         return userDTO;
     }
 
     public static User mapToEntity(UserDTO userDTO, String userSessionId) {
         User user = new User();
-        //user.setId(userDTO.getId());
+        user.setId(userDTO.getId());
         user.setFirstName(userDTO.getFirstName());
         user.setLastName(userDTO.getLastName());
         user.setAlias(userDTO.getAlias());

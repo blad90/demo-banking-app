@@ -4,6 +4,7 @@ declare module "next-auth" {
   interface Session {
     accessToken?: string
     idToken?: string
+    userId?: string
   }
 }
 
@@ -11,5 +12,6 @@ declare module "@auth/core/jwt" {
   interface JWT {
     accessToken?: string
     idToken?: string
+    userId?: string
   }
 }

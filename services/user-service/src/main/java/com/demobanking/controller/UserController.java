@@ -21,6 +21,12 @@ public class UserController {
         return new ResponseEntity<>(userDTO, HttpStatus.OK);
     }
 
+    @GetMapping("/userSessionId/{userSessionId}")
+    public ResponseEntity<UserDTO> getUser(@PathVariable String userSessionId) {
+        UserDTO userDTO = userService.retrieveUserBySessionId(userSessionId).get();
+        return new ResponseEntity<>(userDTO, HttpStatus.OK);
+    }
+
     @GetMapping
     public ResponseEntity<List<UserDTO>> getAllUserIds(@RequestParam List<Long> ids){
         return ResponseEntity.ok(userService.retrieveAllUserIds(ids));

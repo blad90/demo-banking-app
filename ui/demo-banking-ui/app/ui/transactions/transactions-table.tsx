@@ -1,4 +1,4 @@
-import { getTransactionsByPage } from "@/app/services/transaction-service";
+import { getTransactionsByCustomerIdByPage } from "@/app/services/transaction-service";
 
 export default async function TransactionsTable({
   description,
@@ -8,7 +8,8 @@ export default async function TransactionsTable({
   currentPage: number;
 }) {
     //await new Promise((resolve) => setTimeout(resolve, 2000)); //TODO: for testing purposes, added a small delay.
-    const transactions = await getTransactionsByPage(currentPage - 1, 10, '');
+    const transactions = await getTransactionsByCustomerIdByPage(currentPage - 1, 6, '');
+    
     return (
         <div className="overflow-x-auto shadow-md sm:rounded-lg">
       <table className="min-w-full divide-y divide-gray-200">
@@ -42,11 +43,10 @@ export default async function TransactionsTable({
             <tr key={transaction.id} className="hover:bg-gray-50">
               <td className="px-6 py-4 whitespace-nowrap">
                 <div className="text-sm font-medium text-gray-900">{transaction.sourceAccount}</div>
-                <div className="text-sm text-gray-500">{transaction.sourceAccount}</div>
+                <div className="text-sm text-gray-500">{transaction.customer.firstName} {transaction.customer.lastName}</div>
               </td>
               <td className="px-6 py-4 whitespace-nowrap">
-                <div className="text-sm text-gray-900">{transaction.account.accountNumber}</div>
-                <div className="text-sm text-gray-500">{transaction.account.customer.firstName} {transaction.account.customer.lastName}</div>
+                <div className="text-sm text-gray-900">{transaction.destinationAccount}</div>
               </td>
               <td className="px-6 py-4 whitespace-nowrap">
                 <div className="text-sm text-gray-900">{transaction.description}</div>

@@ -7,6 +7,7 @@ import java.math.BigDecimal;
 
 @Data
 public class TransactionRequest {
+    private Long customerId;
     private String sourceAccountNumber;
     private String destinationAccountNumber;
     private TransactionType transactionType;

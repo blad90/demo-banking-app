@@ -147,6 +147,13 @@ public class UserServiceImpl implements IUserService{
     }
 
     @Override
+    public Optional<UserDTO> retrieveUserBySessionId(String sessionId) {
+        User userRetrieved = userRepository.findUserByUserSessionId(sessionId).orElseThrow(()-> new UserNotFoundException(0L));
+        UserDTO userDTO = UserMapper.mapToDTO(userRetrieved);
+        return Optional.of(userDTO);
+    }
+
+    @Override
     public List<UserDTO> retrieveAllUsers() {
         return userRepository.findAll().stream().map(
                 user -> new UserDTO(
@@ -170,5 +177,10 @@ public class UserServiceImpl implements IUserService{
                 .stream()
                 .map(UserMapper::mapToDTO)
                 .toList();
+    }
+
+    @Override
+    public Optional<UserDTO> findUserByNationalId(String nationalId) {
+        return Optional.of(UserMapper.mapToDTO(userRepository.findUserByNationalId(nationalId).get()));
     }
 }

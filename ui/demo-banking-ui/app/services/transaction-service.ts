@@ -3,17 +3,18 @@ import { auth } from "../lib/auth";
 import { Transaction } from "@/types/transaction";
 import { Account } from "@/types/account";
 import { fetchAccountsByAccountNumbers } from "./account-service";
-import { fetchUsersByIds } from "./user-service";
+import { fetchUsersByIds, getCustomerById, getCustomerByUserSessionId } from "./user-service";
 import { User } from "@/types/user";
 
+const session = await auth();
+
 export async function getTransactions() {
-  const session = await auth();
+  
 
   if (!session) {
     redirect("/login")
   }
-    console.log('Fetching transactions data...');
-    await new Promise((resolve) => setTimeout(resolve, 5000));
+    //await new Promise((resolve) => setTimeout(resolve, 5000));
     
     const res = await fetch(
       "http://localhost:8083/transactions/all",
@@ -24,7 +25,6 @@ export async function getTransactions() {
         },
       }
     )
-    console.log('Data fetch completed after 5 seconds.');
 
     if (!res.ok) {
       throw new Error("Failed to fetch transactions")
@@ -55,6 +55,28 @@ export async function getTransactionsPages(page: Number, size: Number, sort: str
     return 5;
 }
 
+export async function getTransactionsByCustomerIdByPage(page: number, size: number, sort: string){
+  const userBySession = await getCustomerByUserSessionId(session?.userId!);
+
+  const res = await fetch(`http://localhost:8083/transactions/page/all/${userBySession.id}?page=${page}&size=${size}`, { cache: 'no-cache'});
+  if(!res.ok){
+        throw new Error('Failed to fetch transactions by customer ID #: ' + userBySession.id);
+    }
+    const data = await res.json();
+  const transactions: Transaction[] = data.content ?? data;
+
+  // customer field is the userId
+  const user: User = await getCustomerById(userBySession.id);
+
+  return {
+    ...data,
+    content: transactions.map(transaction => ({
+      ...transaction,
+      customer: user ?? null,
+    })),
+  };
+}
+
 export async function getTransactionsByPage(page: number, size: number, sort: string){  
     const res = await fetch(`http://localhost:8083/transactions/page/all?page=${page}&size=${size}`, { cache: 'no-cache'});
     if(!res.ok){
@@ -67,7 +89,7 @@ export async function getTransactionsByPage(page: number, size: number, sort: st
     const accounts: Account[] = await fetchAccountsByAccountNumbers(accountNumbers);
     const accountMap = Object.fromEntries(accounts.map(a => [a.accountNumber, a]));
 
-    const customerIds = [...new Set<number>(accounts.map(a => a.customer))];
+    const customerIds = [...new Set<number>(accounts.map(a => a.customerId))];
     const users: User[] = await fetchUsersByIds(customerIds);
     const userMap = Object.fromEntries(users.map(u => [u.id, u]));
 
@@ -77,7 +99,7 @@ export async function getTransactionsByPage(page: number, size: number, sort: st
       ...transaction,
       account: {
         ...accountMap[transaction.destinationAccount],
-        customer: userMap[accountMap[transaction.destinationAccount]?.customer] ?? null,
+        customer: userMap[accountMap[transaction.destinationAccount]?.customerId] ?? null,
       },
     })),
     }

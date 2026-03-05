@@ -1,6 +1,7 @@
 package com.demobanking.service;
 
 import com.demobanking.dto.UserDTO;
+import com.demobanking.entity.User;
 import com.demobanking.entity.UserState;
 
 import java.util.List;
@@ -18,6 +19,8 @@ public interface IUserService {
     void registerLogActivity(Long userId); // TODO: for simplicity and placeholder
     void reverseLogActivity(Long userId); // TODO: for simplicity and placeholder
     Optional<UserDTO> retrieveUserById(Long id);
+    Optional<UserDTO> retrieveUserBySessionId(String sessionId);
     List<UserDTO> retrieveAllUsers();
     List<UserDTO> retrieveAllUserIds(List<Long> ids);
+    Optional<UserDTO> findUserByNationalId(String nationalId);
 }

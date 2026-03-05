@@ -11,6 +11,7 @@ message CreateTransactionCommand {
   TransactionType transaction_type = 4;
   string transaction_state = 5;
   string description = 6;
+  string customer_id = 7;
 }
 enum TransactionType {
     DEBIT = 0;
@@ -36,6 +37,7 @@ message TransactionCreatedEvent {
   TransactionState transactionState = 6;
   string amount = 7;
   string description = 8;
+  string customer_id = 9;
 }
 
 message TransactionRequest {
@@ -44,6 +46,7 @@ message TransactionRequest {
   TransactionType transaction_type = 3;
   string amount = 4;
   string description = 5;
+  string customer_id = 6;
 }
 
 message TransferCommand {
@@ -53,4 +56,5 @@ message TransferCommand {
   string destination_account_number = 4;
   string amount = 5;
   string description = 6;
+  string customer_id = 7;
 }

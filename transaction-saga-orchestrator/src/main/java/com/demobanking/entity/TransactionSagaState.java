@@ -20,6 +20,7 @@ public class TransactionSagaState {
     @Id
     private String sagaId;
     private String correlationId;
+    private Long customerId;
     private String sourceAccountNumber;
     private String destinationAccountNumber;
     private BigDecimal amount;
@@ -36,9 +37,10 @@ public class TransactionSagaState {
     @UpdateTimestamp
     private LocalDateTime lastUpdated;
 
-    public TransactionSagaState(String sagaId, String correlationId, String sourceAccountNumber, String destinationAccountNumber, BigDecimal amount, TransactionType transactionType, String transactionDescription, TransactionSagaStatus transactionSagaStatus, TransactionSagaStep currentStep) {
+    public TransactionSagaState(String sagaId, String correlationId, Long customerId, String sourceAccountNumber, String destinationAccountNumber, BigDecimal amount, TransactionType transactionType, String transactionDescription, TransactionSagaStatus transactionSagaStatus, TransactionSagaStep currentStep) {
         this.sagaId = sagaId;
         this.correlationId = correlationId;
+        this.customerId = customerId;
         this.sourceAccountNumber = sourceAccountNumber;
         this.destinationAccountNumber = destinationAccountNumber;
         this.amount = amount;

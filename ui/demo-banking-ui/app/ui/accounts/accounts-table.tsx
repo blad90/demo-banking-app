@@ -1,4 +1,4 @@
-import { getAccountsByPage } from "@/app/services/account-service";
+import { getAccountsByCustomerIdByPage, getAccountsByPage } from "@/app/services/account-service";
 
 export default async function AccountsTable({
   query,
@@ -8,7 +8,7 @@ export default async function AccountsTable({
   currentPage: number;
 }) {
   // const accounts = await getFilteredAccounts(query, currentPage - 1);
-  const accounts = await getAccountsByPage(currentPage - 1, 10, '');
+  const accounts = await getAccountsByCustomerIdByPage(currentPage - 1, 10, '');
     //await new Promise((resolve) => setTimeout(resolve, 2000)); //TODO: for testing purposes, added a small delay.
     return (
         <div className="overflow-x-auto shadow-md sm:rounded-lg">
@@ -46,8 +46,8 @@ export default async function AccountsTable({
                 <div className="text-sm text-gray-500">{account.accountNumber}</div>
               </td>
               <td className="px-6 py-4 whitespace-nowrap">
-                <div className="text-sm text-gray-900">{account.customer.firstName} {account.customer.lastName}</div>
-                <div className="text-sm text-gray-500">{account.customer.nationalId}</div>
+                <div className="text-sm text-gray-900">{account.customer?.firstName} {account.customer?.lastName}</div>
+                <div className="text-sm text-gray-500">{account.customer?.id}</div>
               </td>
               <td className="px-6 py-4 whitespace-nowrap">
                 <div className="text-sm text-gray-900">{account.balance}</div>

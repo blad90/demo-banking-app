@@ -8,7 +8,7 @@ public class AccountMapper {
         AccountDTO accountDTO = new AccountDTO(
                 account.getId(),
                 account.getAccountNumber(),
-                account.getCustomer(), // TODO: Retrieve user correctly according to ID.
+                account.getCustomerId(), // TODO: Retrieve user correctly according to ID.
                 account.getBalance(),
                 account.getAccountType(),
                 account.getAccountCreationDate(),
@@ -22,7 +22,7 @@ public class AccountMapper {
         Account account = new Account(
                 accountDTO.getId(),
                 accountDTO.getAccountNumber(),
-                accountDTO.getCustomer(), // TODO: Retrieve user correctly according to ID.
+                accountDTO.getCustomerId(), // TODO: Retrieve user correctly according to ID.
                 accountDTO.getBalance(),
                 accountDTO.getAccountType(),
                 accountDTO.getAccountCreationDate(),
@@ -33,7 +33,7 @@ public class AccountMapper {
     }
 
     public static Account mapToEntityUpdate(AccountDTO accountDTO, Account account) {
-        if(accountDTO.getCustomer() != null) account.setCustomer(accountDTO.getCustomer());
+        if(accountDTO.getCustomerId() != null) account.setCustomerId(accountDTO.getCustomerId());
         if(accountDTO.getAccountType() != null) account.setAccountType(accountDTO.getAccountType());
         if(accountDTO.getBalance() != null) account.setBalance(accountDTO.getBalance());
         return account;

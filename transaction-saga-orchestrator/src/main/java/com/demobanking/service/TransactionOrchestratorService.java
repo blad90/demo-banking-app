@@ -34,6 +34,7 @@ public class TransactionOrchestratorService implements ITransactionOrchestratorS
         TransactionSagaState transactionSagaState = new TransactionSagaState(
                 sagaId,
                 UUID.randomUUID().toString(),
+                transactionRequest.getCustomerId(),
                 transactionRequest.getSourceAccountNumber(),
                 transactionRequest.getDestinationAccountNumber(),
                 transactionRequest.getAmount(),
@@ -87,6 +88,7 @@ public class TransactionOrchestratorService implements ITransactionOrchestratorS
         TransferCommand transferCommand = TransferCommand.newBuilder()
                 .setSagaId(transactionSagaState.getSagaId())
                 .setCorrelationId(transactionSagaState.getCorrelationId())
+                .setCustomerId(String.valueOf(transactionSagaState.getCustomerId()))
                 .setSourceAccountNumber(transactionSagaState.getSourceAccountNumber())
                 .setDestinationAccountNumber(transactionSagaState.getDestinationAccountNumber())
                 .setAmount(String.valueOf(transactionSagaState.getAmount()))

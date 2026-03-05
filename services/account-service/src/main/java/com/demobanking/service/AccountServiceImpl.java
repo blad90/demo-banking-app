@@ -37,7 +37,7 @@ public class AccountServiceImpl implements IAccountService{
             Account account = accountRepository
                     .findAccountByAccountNumber(validateAccountCommand.getAccountNumber())
                     .orElseThrow(() -> new BankAccountNotFoundException(validateAccountCommand.getAccountNumber()));
-            AccountDTO accountDTO = AccountMapper.mapToDTO(account.getCustomer(), account);
+            AccountDTO accountDTO = AccountMapper.mapToDTO(account.getCustomerId(), account);
             accountEventProducer.publishAccountValidated(validateAccountCommand.getSagaId(), accountDTO);
         } catch (BankAccountNotFoundException e){
             accountEventProducer.publishAccountNotValidated(validateAccountCommand.getSagaId(), e.getMessage());
@@ -151,12 +151,9 @@ public class AccountServiceImpl implements IAccountService{
     }
 
     @Override
-    public List<AccountDTO> retrieveAllAccountsByCustomerId(String customerId) {
-        return accountRepository.findAccountsByCustomer(customerId)
-                .stream()
-                .flatMap(Collection::stream)
-                .map(account -> AccountMapper.mapToDTO(0L, account))
-                .toList();
+    public Page<AccountDTO> findAllAccountsByCustomerId(Long customerId, Pageable pageable) {
+        return accountRepository.findAllByCustomerId(customerId, pageable)
+                .map(account -> AccountMapper.mapToDTO(0L, account));
     }
 
     @Override

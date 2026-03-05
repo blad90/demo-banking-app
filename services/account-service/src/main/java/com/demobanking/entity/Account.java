@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "accounts")
+@Builder
 @Getter
 @Setter
 @AllArgsConstructor
@@ -20,7 +21,7 @@ public class Account {
     @GeneratedValue
     private Long id;
     private String accountNumber;
-    private Long customer;
+    private Long customerId;
     private BigDecimal balance;
     private String accountType;
     @CreationTimestamp
@@ -31,9 +32,9 @@ public class Account {
     @Column(name = "account_state")
     private AccountState accountState;
 
-    public Account(String accountNumber, Long customer, String accountType, AccountState accountState) {
+    public Account(String accountNumber, Long customerId, String accountType, AccountState accountState) {
         this.accountNumber = accountNumber;
-        this.customer = customer;
+        this.customerId = customerId;
         this.accountType = accountType;
         this.accountState = accountState;
     }

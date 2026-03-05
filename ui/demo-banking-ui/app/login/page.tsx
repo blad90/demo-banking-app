@@ -12,7 +12,7 @@ export default function LoginPage() {
         <button
           style={styles.button}
           onClick={() => signIn("keycloak",
-            { callbackUrl: "/dashboard/transactions",}
+            { callbackUrl: "/dashboard",}
           )}
         >
           Login with Keycloak

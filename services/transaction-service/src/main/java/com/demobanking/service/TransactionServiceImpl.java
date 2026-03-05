@@ -1,0 +1,104 @@
+package com.demobanking.service;
+
+import com.demobanking.dto.TransactionDTO;
+import com.demobanking.entity.Transaction;
+import com.demobanking.listener.TransactionEventProducer;
+import com.demobanking.repository.ITransactionRepository;
+import com.demobanking.utils.TransactionMapper;
+import com.demobanking.events.Transactions.TransactionState;
+import com.demobanking.events.Transactions.TransactionType;
+import com.demobanking.events.Transactions.TransferCommand;
+import com.demobanking.events.Transactions.CreateTransactionCommand;
+import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.UUID;
+
+@Service
+@AllArgsConstructor
+public class TransactionServiceImpl implements ITransactionService{
+
+    private final TransactionEventProducer transactionEventProducer;
+    private ITransactionRepository transactionRepository;
+
+    @Override
+    public void createTransaction(CreateTransactionCommand createTransactionCommand) {
+//        Transaction newTransaction = new Transaction(
+//                createTransactionCommand.getCorrelationId(),
+//                createTransactionCommand.getDescription(),
+//                createTransactionCommand.getA
+//        )
+//        newTransaction.setTransactionState(TransactionState.TRAN_INITIATED);
+//        newTransaction.setType(type);
+
+//        transactionRepository.save(newTransaction);
+    }
+
+    @Override
+    public void transfer(String sagaId, TransferCommand transferCommand) {
+
+        Transaction newTransaction = new Transaction(
+                UUID.fromString(transferCommand.getCorrelationId()),
+                transferCommand.getSourceAccountNumber(),
+                Long.parseLong(transferCommand.getCustomerId()),
+                transferCommand.getDestinationAccountNumber(),
+                transferCommand.getDescription(),
+                new BigDecimal(transferCommand.getAmount()),
+                TransactionType.TRANSFER);
+        newTransaction.setTransactionState(TransactionState.TRAN_COMPLETED);
+
+        transactionRepository.save(newTransaction);
+
+        transactionEventProducer.publishTransactionCreated(sagaId, newTransaction);
+    }
+
+    @Override
+    public TransactionDTO retrieveTransactionById(UUID id) {
+        Transaction existingTransaction = transactionRepository.findById(id).orElse(null);
+
+        if(existingTransaction != null) transactionRepository.save(existingTransaction);
+        else return TransactionMapper.mapToDTO(existingTransaction);
+        return null;
+    }
+
+    @Override
+    public List<TransactionDTO> retrieveAllTransactions() {
+        return transactionRepository.findAll()
+                .stream().map(TransactionMapper::mapToDTO)
+                .toList();
+    }
+
+    @Override
+    public Page<TransactionDTO> findAllTransactions(Pageable pageable) {
+        return transactionRepository.findAll(pageable)
+                .map(TransactionMapper::mapToDTO);
+    }
+
+    @Override
+    public Page<TransactionDTO> findAllFilteredTransactions(String description, Pageable pageable) {
+        return transactionRepository
+                .findAllByDescriptionContainingIgnoreCase(description, pageable)
+                .map(TransactionMapper::mapToDTO);
+    }
+
+    @Override
+    public Page<TransactionDTO> findAllByCustomerId(Long customerId, Pageable pageable) {
+        return transactionRepository
+                .findAllByCustomerId(customerId, pageable)
+                .map(TransactionMapper::mapToDTO);
+    }
+
+    @Override
+    public void cancelTransaction(UUID transactionId) {
+        Transaction existingTransaction = transactionRepository.findById(transactionId).orElse(null);
+
+        if(existingTransaction != null) {
+            existingTransaction.setTransactionState(TransactionState.TRAN_CANCELLED);
+            transactionRepository.save(existingTransaction);
+        }
+    }
+}

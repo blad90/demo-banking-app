@@ -22,7 +22,7 @@ public class AccountEventProducer {
     public void publishAccountCreated(String sagaId, Account account){
         AccountCreatedEvent accountCreatedEvent = AccountCreatedEvent.newBuilder()
                 .setAccountNumber(account.getAccountNumber())
-                .setUserId(account.getCustomer())
+                .setUserId(account.getCustomerId())
                 .setAccountState(AccountState.ACCOUNT_CREATED)
                 .setSagaId(sagaId)
                 .build();

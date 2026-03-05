@@ -1,6 +1,9 @@
-import { Account } from "@/types/account";
-import { fetchUsersByIds } from "./user-service";
+import { Account} from "@/types/account";
+import { fetchUsersByIds, getCustomerById, getCustomerByUserSessionId } from "./user-service";
 import { User } from "@/types/user";
+import { auth } from "../lib/auth";
+
+const session = await auth();
 
   export async function getFilteredAccounts(query: string, currentPage: number){
     const offset = (currentPage - 1) * 10; // accounts per page
@@ -21,6 +24,31 @@ export async function getAccountsPages(page: Number, size: Number, sort: string)
     return 5;
 }
 
+export async function getAccountsByCustomerIdByPage(page: number, size: number, sort: string){
+  const user = await getCustomerByUserSessionId(session?.userId!);
+
+  const res = await fetch(`http://localhost:8082/accounts/page/all/${user.id}?page=${page}&size=${size}`, { cache: 'no-cache'});
+  if(!res.ok){
+        throw new Error('Failed to fetch accounts');
+    }
+    const data = await res.json();
+  const accounts: Account[] = data.content ?? data;
+
+  // customer field is the userId
+  const customerIds = [...new Set<number>(accounts.map(a => a.customerId))];
+  const users: User[] = await fetchUsersByIds(customerIds);
+  
+  const userMap = Object.fromEntries(users.map(u => [u.id, u]));
+
+  return {
+    ...data,
+    content: accounts.map(account => ({
+      ...account,
+      customer: userMap[account.customerId] ?? null,
+    })),
+  };
+}
+
 export async function getAccountsByPage(page: number, size: number, sort: string){  
     const res = await fetch(`http://localhost:8082/accounts/page/all?page=${page}&size=${size}`, { cache: 'no-cache'});
     if(!res.ok){
@@ -30,15 +58,16 @@ export async function getAccountsByPage(page: number, size: number, sort: string
   const accounts: Account[] = data.content ?? data;
 
   // customer field is the userId
-  const customerIds = [...new Set<number>(accounts.map(a => a.customer))];
+  const customerIds = [...new Set<number>(accounts.map(a => a.customerId))];
   const users: User[] = await fetchUsersByIds(customerIds);
+  
   const userMap = Object.fromEntries(users.map(u => [u.id, u]));
 
   return {
     ...data,
     content: accounts.map(account => ({
       ...account,
-      customer: userMap[account.customer] ?? null,
+      customer: userMap[account.customerId] ?? null,
     })),
   };
 }
