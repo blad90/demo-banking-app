@@ -8,7 +8,7 @@ const session = await auth();
   export async function getFilteredAccounts(query: string, currentPage: number){
     const offset = (currentPage - 1) * 10; // accounts per page
     
-    const res = await fetch(`http://localhost:8082/accounts/page/all/search?query=${query}&page=${currentPage}`, { cache: 'no-cache'});
+    const res = await fetch(`${process.env.ACCOUNT_SERVICE_API_URL}/page/all/search?query=${query}&page=${currentPage}`, { cache: 'no-cache'});
     if(!res.ok){
         throw new Error('Failed to fetch accounts');
     }
@@ -17,7 +17,7 @@ const session = await auth();
 
 export async function getAccountsPages(page: Number, size: Number, sort: string){  
   const user = await getCustomerByUserSessionId(session?.userId!);  
-  const res = await fetch(`http://localhost:8082/accounts/page/all/${user.id}?page=${page}&size=${size}`, { cache: 'no-cache'});
+  const res = await fetch(`${process.env.ACCOUNT_SERVICE_API_URL}/page/all/${user.id}?page=${page}&size=${size}`, { cache: 'no-cache'});
     if(!res.ok){
         throw new Error('Failed to fetch accounts');
     }
@@ -28,7 +28,7 @@ export async function getAccountsPages(page: Number, size: Number, sort: string)
 export async function getAccountsByCustomerIdByPage(page: number, size: number, sort: string){
   const user = await getCustomerByUserSessionId(session?.userId!);
 
-  const res = await fetch(`http://localhost:8082/accounts/page/all/${user.id}?page=${page}&size=${size}`, { cache: 'no-cache'});
+  const res = await fetch(`${process.env.ACCOUNT_SERVICE_API_URL}/page/all/${user.id}?page=${page}&size=${size}`, { cache: 'no-cache'});
   if(!res.ok){
         throw new Error('Failed to fetch accounts');
     }
@@ -51,7 +51,7 @@ export async function getAccountsByCustomerIdByPage(page: number, size: number, 
 }
 
 export async function getAccountsByPage(page: number, size: number, sort: string){  
-    const res = await fetch(`http://localhost:8082/accounts/page/all?page=${page}&size=${size}`, { cache: 'no-cache'});
+    const res = await fetch(`${process.env.ACCOUNT_SERVICE_API_URL}/page/all?page=${page}&size=${size}`, { cache: 'no-cache'});
     if(!res.ok){
         throw new Error('Failed to fetch accounts');
     }
@@ -75,7 +75,7 @@ export async function getAccountsByPage(page: number, size: number, sort: string
 
 export async function fetchAccountsByAccountNumbers(accountNumbers: string[]) {
   const res = await fetch(
-    `http://localhost:8082/accounts?accountNumbers=${accountNumbers.join(',')}`,
+    `${process.env.ACCOUNT_SERVICE_API_URL}?accountNumbers=${accountNumbers.join(',')}`,
     { cache: 'no-cache' }
   );
   if (!res.ok) throw new Error('Failed to fetch accounts');

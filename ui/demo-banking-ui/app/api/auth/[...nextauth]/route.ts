@@ -6,7 +6,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     Keycloak({
       clientId: process.env.KEYCLOAK_CLIENT_ID!,
       clientSecret: process.env.KEYCLOAK_CLIENT_SECRET!,
-      issuer: "http://localhost:9090/realms/demo-bank-realm",
+      issuer: `${process.env.KEYCLOAK_ISSUER}`,
     }),
   ],
   session: { strategy: "jwt" },

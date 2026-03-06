@@ -4,7 +4,7 @@ export async function POST(request: NextRequest){
     try{
     const body = await request.json();
 
-    const response = await fetch('http://localhost:8087/orchestrator/processAccountCreation', {
+    const response = await fetch(`${process.env.ACCT_SAGA_ORCHESTRATOR_URL}`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",

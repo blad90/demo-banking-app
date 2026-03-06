@@ -17,7 +17,7 @@ export async function getTransactions() {
     //await new Promise((resolve) => setTimeout(resolve, 5000));
     
     const res = await fetch(
-      "http://localhost:8083/transactions/all",
+      `${process.env.TRANSACTION_SERVICE_API_URL}/transactions/all`,
       {
         cache: "no-store",
         headers: {
@@ -36,7 +36,7 @@ export async function getTransactions() {
   export async function getFilteredTransactions(query: string, currentPage: number){
     const offset = (currentPage - 1) * 10; // transactions per page
     
-    const res = await fetch(`http://localhost:8083/transactions/page/all/search?description=${query}&page=${currentPage}`, { cache: 'no-cache'});
+    const res = await fetch(`${process.env.TRANSACTION_SERVICE_API_URL}/page/all/search?description=${query}&page=${currentPage}`, { cache: 'no-cache'});
     if(!res.ok){
         throw new Error('Failed to fetch transactions');
     }
@@ -47,7 +47,7 @@ export async function getTransactions() {
 
 export async function getTransactionsPages(page: Number, size: Number, sort: string){  
   const userBySession = await getCustomerByUserSessionId(session?.userId!);  
-  const res = await fetch(`http://localhost:8083/transactions/page/all/${userBySession.id}?page=${page}&size=${size}`, { cache: 'no-cache'});
+  const res = await fetch(`${process.env.TRANSACTION_SERVICE_API_URL}/page/all/${userBySession.id}?page=${page}&size=${size}`, { cache: 'no-cache'});
     if(!res.ok){
         throw new Error('Failed to fetch transactions');
     }
@@ -58,7 +58,7 @@ export async function getTransactionsPages(page: Number, size: Number, sort: str
 export async function getTransactionsByCustomerIdByPage(page: number, size: number, sort: string){
   const userBySession = await getCustomerByUserSessionId(session?.userId!);
 
-  const res = await fetch(`http://localhost:8083/transactions/page/all/${userBySession.id}?page=${page}&size=${size}`, { cache: 'no-cache'});
+  const res = await fetch(`${process.env.TRANSACTION_SERVICE_API_URL}/page/all/${userBySession.id}?page=${page}&size=${size}`, { cache: 'no-cache'});
   if(!res.ok){
         throw new Error('Failed to fetch transactions by customer ID #: ' + userBySession.id);
     }
@@ -78,7 +78,7 @@ export async function getTransactionsByCustomerIdByPage(page: number, size: numb
 }
 
 export async function getTransactionsByPage(page: number, size: number, sort: string){  
-    const res = await fetch(`http://localhost:8083/transactions/page/all?page=${page}&size=${size}`, { cache: 'no-cache'});
+    const res = await fetch(`${process.env.TRANSACTION_SERVICE_API_URL}/page/all?page=${page}&size=${size}`, { cache: 'no-cache'});
     if(!res.ok){
         throw new Error('Failed to fetch transactions');
     }

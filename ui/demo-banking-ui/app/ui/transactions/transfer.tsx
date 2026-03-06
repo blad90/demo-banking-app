@@ -206,7 +206,7 @@ export default function Transfer({user} : any){
   disabled={
     status === "STARTED" || status === "PROCESSING"
   }
-  className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+  className="bg-[#006D77] hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
 >
   {status === "STARTED" || status === "PROCESSING"
     ? "Processing..."

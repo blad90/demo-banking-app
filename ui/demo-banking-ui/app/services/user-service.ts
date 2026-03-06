@@ -3,7 +3,7 @@ import { auth } from "../lib/auth";
 const session = await auth();
 
 export async function getCustomers(){
-    const res = await fetch('http://localhost:8081/users/all', { cache: 'no-cache'});
+    const res = await fetch(`${process.env.USER_SERVICE_API_URL}/all`, { cache: 'no-cache'});
     if(!res.ok){
         throw new Error('Failed to fetch customers');
     }
@@ -11,7 +11,7 @@ export async function getCustomers(){
 }
 
 export async function getCustomerById(id: number){
-    const res = await fetch(`http://localhost:8081/users/${id}`, { cache: 'no-cache'});
+    const res = await fetch(`${process.env.USER_SERVICE_API_URL}/${id}`, { cache: 'no-cache'});
     if(!res.ok){
         throw new Error(`Failed to fetch customer with ID: ${id}`);
     }
@@ -19,7 +19,7 @@ export async function getCustomerById(id: number){
 }
 
 export async function getCustomerByUserSessionId(id: string){
-    const res = await fetch(`http://localhost:8081/users/userSessionId/${id}`, { cache: 'no-cache'});
+    const res = await fetch(`${process.env.USER_SERVICE_API_URL}/userSessionId/${id}`, { cache: 'no-cache'});
     if(!res.ok){
         throw new Error(`Failed to fetch customer with session ID: ${id}`);
     }
@@ -28,7 +28,7 @@ export async function getCustomerByUserSessionId(id: string){
 
 export async function getLoggedCustomer(){
     const userSessionId = session?.userId;
-    const res = await fetch(`http://localhost:8081/users/userSessionId/${userSessionId}`, { cache: 'no-cache'});
+    const res = await fetch(`${process.env.USER_SERVICE_API_URL}/userSessionId/${userSessionId}`, { cache: 'no-cache'});
     if(!res.ok){
         throw new Error(`Failed to fetch customer with session ID: ${userSessionId}`);
     }
@@ -37,7 +37,7 @@ export async function getLoggedCustomer(){
 
 export async function fetchUsersByIds(ids: number[]) {
   const res = await fetch(
-    `http://localhost:8081/users?ids=${ids.join(',')}`,
+    `${process.env.USER_SERVICE_API_URL}?ids=${ids.join(',')}`,
     { cache: 'no-cache' }
   );
   if (!res.ok) throw new Error('Failed to fetch users');
