@@ -1,4 +1,5 @@
-import { getTransactionsByCustomerIdByPage } from "@/app/services/transaction-service";
+import { getTransactionsByCustomerIdByPage, getTransactionsPages } from "@/app/services/transaction-service";
+import Pagination from "./pagination";
 
 export default async function TransactionsTable({
   description,
@@ -9,6 +10,9 @@ export default async function TransactionsTable({
 }) {
     //await new Promise((resolve) => setTimeout(resolve, 2000)); //TODO: for testing purposes, added a small delay.
     const transactions = await getTransactionsByCustomerIdByPage(currentPage - 1, 6, '');
+    const totalPages = await getTransactionsPages(currentPage, 10, '');
+
+    if(transactions.content.length <= 0) return (<div> No data available.</div>);
     
     return (
         <div className="overflow-x-auto shadow-md sm:rounded-lg">
@@ -67,6 +71,9 @@ export default async function TransactionsTable({
           ))}
         </tbody>
       </table>
+      <div className="mt-5 flex w-full justify-center">
+                <Pagination totalPages={totalPages} />
+              </div>
     </div>
     );
 }

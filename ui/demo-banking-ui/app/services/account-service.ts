@@ -16,12 +16,13 @@ const session = await auth();
 }
 
 export async function getAccountsPages(page: Number, size: Number, sort: string){  
-    const res = await fetch(`http://localhost:8082/accounts/page/all`, { cache: 'no-cache'});
+  const user = await getCustomerByUserSessionId(session?.userId!);  
+  const res = await fetch(`http://localhost:8082/accounts/page/all/${user.id}?page=${page}&size=${size}`, { cache: 'no-cache'});
     if(!res.ok){
         throw new Error('Failed to fetch accounts');
     }
-    const data = res.json();
-    return 5;
+    const data = await res.json();
+    return data.totalPages;
 }
 
 export async function getAccountsByCustomerIdByPage(page: number, size: number, sort: string){

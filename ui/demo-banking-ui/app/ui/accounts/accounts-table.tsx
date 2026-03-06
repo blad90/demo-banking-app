@@ -1,4 +1,5 @@
-import { getAccountsByCustomerIdByPage, getAccountsByPage } from "@/app/services/account-service";
+import { getAccountsByCustomerIdByPage, getAccountsByPage, getAccountsPages } from "@/app/services/account-service";
+import Pagination from "./pagination";
 
 export default async function AccountsTable({
   query,
@@ -9,8 +10,12 @@ export default async function AccountsTable({
 }) {
   // const accounts = await getFilteredAccounts(query, currentPage - 1);
   const accounts = await getAccountsByCustomerIdByPage(currentPage - 1, 10, '');
+  const totalPages = await getAccountsPages(currentPage, 10, '');
     //await new Promise((resolve) => setTimeout(resolve, 2000)); //TODO: for testing purposes, added a small delay.
+    if(accounts.content.length <= 0) return (<div> No data available.</div>);
+
     return (
+      <div>
         <div className="overflow-x-auto shadow-md sm:rounded-lg">
       <table className="min-w-full divide-y divide-gray-200">
         <thead className="bg-gray-100">
@@ -69,5 +74,10 @@ export default async function AccountsTable({
         </tbody>
       </table>
     </div>
+
+    <div className="mt-5 flex w-full justify-center">
+        <Pagination totalPages={totalPages} />
+      </div>
+      </div>
     );
 }

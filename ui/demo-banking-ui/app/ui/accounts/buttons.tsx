@@ -1,7 +1,7 @@
 import { PencilIcon, PlusIcon, TrashIcon } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 
-export function CreateAccount() {
+export function CreateAccountButton() {
   return (
     <Link
       href="/dashboard/accounts/create-account"
@@ -13,7 +13,7 @@ export function CreateAccount() {
   );
 }
 
-export function Transfer() {
+export function TransferButton() {
   return (
     <Link
       href="/dashboard/transactions/transfer"

@@ -46,13 +46,13 @@ export async function getTransactions() {
 
 
 export async function getTransactionsPages(page: Number, size: Number, sort: string){  
-    const res = await fetch(`http://localhost:8083/transactions/page/all`, { cache: 'no-cache'});
+  const userBySession = await getCustomerByUserSessionId(session?.userId!);  
+  const res = await fetch(`http://localhost:8083/transactions/page/all/${userBySession.id}?page=${page}&size=${size}`, { cache: 'no-cache'});
     if(!res.ok){
         throw new Error('Failed to fetch transactions');
     }
-    const data = res.json();
-    //const totalPages = Math.ceil(Number(data[0].count) / 10); // /10 items per page
-    return 5;
+    const data = await res.json();
+    return data.totalPages;
 }
 
 export async function getTransactionsByCustomerIdByPage(page: number, size: number, sort: string){
