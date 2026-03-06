@@ -15,6 +15,7 @@ export default async function TransactionsTable({
     if(transactions.content.length <= 0) return (<div> No data available.</div>);
     
     return (
+      <div>
         <div className="overflow-x-auto shadow-md sm:rounded-lg">
       <table className="min-w-full divide-y divide-gray-200">
         <thead className="bg-gray-100">
@@ -71,9 +72,12 @@ export default async function TransactionsTable({
           ))}
         </tbody>
       </table>
+    </div>
+    <div>
       <div className="mt-5 flex w-full justify-center">
                 <Pagination totalPages={totalPages} />
               </div>
+    </div>
     </div>
     );
 }

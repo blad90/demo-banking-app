@@ -1,7 +1,8 @@
-'use client';
 
+import { getLoggedCustomer } from "@/app/services/user-service";
 import Transfer from "@/app/ui/transactions/transfer";
 
-export default function TransferPage() {
-    return <Transfer/>
+export default async function TransferPage() {
+    const user = await getLoggedCustomer();
+    return <Transfer user={user}/>
 }

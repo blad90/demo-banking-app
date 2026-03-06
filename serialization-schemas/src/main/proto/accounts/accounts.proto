@@ -32,6 +32,7 @@ enum AccountState {
 message ValidateAccountCommand {
   string saga_id = 1;
   string account_number = 2;
+  string destination_account_number = 3;
 }
 
 // The Event: Account Service -> Transaction Orchestrator
@@ -40,6 +41,7 @@ message AccountValidatedEvent {
   string account_number = 2;
   bool validated = 3;
   AccountState accountState = 4;
+  string destination_account_number = 5;
 }
 
 message AccountCreatedEvent {

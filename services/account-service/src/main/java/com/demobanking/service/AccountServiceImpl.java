@@ -38,7 +38,13 @@ public class AccountServiceImpl implements IAccountService{
                     .findAccountByAccountNumber(validateAccountCommand.getAccountNumber())
                     .orElseThrow(() -> new BankAccountNotFoundException(validateAccountCommand.getAccountNumber()));
             AccountDTO accountDTO = AccountMapper.mapToDTO(account.getCustomerId(), account);
-            accountEventProducer.publishAccountValidated(validateAccountCommand.getSagaId(), accountDTO);
+
+            Account destinationAccount = accountRepository
+                    .findAccountByAccountNumber(validateAccountCommand.getDestinationAccountNumber())
+                    .orElseThrow(() -> new BankAccountNotFoundException(validateAccountCommand.getDestinationAccountNumber()));
+            AccountDTO destinationAccountDTO = AccountMapper.mapToDTO(destinationAccount.getCustomerId(), destinationAccount);
+
+            accountEventProducer.publishAccountValidated(validateAccountCommand.getSagaId(), accountDTO, destinationAccountDTO);
         } catch (BankAccountNotFoundException e){
             accountEventProducer.publishAccountNotValidated(validateAccountCommand.getSagaId(), e.getMessage());
         }

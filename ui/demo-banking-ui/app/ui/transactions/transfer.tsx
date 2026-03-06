@@ -13,6 +13,8 @@ export default function Transfer({user} : any){
     const [transactionDate, setTransactionDate] = useState(null);
     const [transactionType, setTransactionType] = useState('');
     const [transactionState, setTransactionState] = useState('');
+    const [customerId, setCustomerId] = useState(user.id);
+
     const [message, setMessage] = useState('');
     const [status, setStatus] = useState('');
     const [sagaId, setSagaId] = useState('');
@@ -25,7 +27,7 @@ export default function Transfer({user} : any){
             const res = await fetch('/api/transactions', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ sourceAccountNumber, destinationAccountNumber, transactionType, amount, description })
+                body: JSON.stringify({ sourceAccountNumber, destinationAccountNumber, transactionType, amount, description, customerId })
             });
 
             const data = await res.json();

@@ -45,7 +45,7 @@ public class TransactionOrchestratorService implements ITransactionOrchestratorS
         );
         sagaStateRepository.save(transactionSagaState);
         // Step 1 - Send command to validate origin account
-        validateAccount(sagaId, transactionRequest);
+        validateAccounts(sagaId, transactionRequest);
 
         return sagaId;
     }
@@ -54,7 +54,7 @@ public class TransactionOrchestratorService implements ITransactionOrchestratorS
         return sagaStateRepository.findById(sagaId).orElseThrow();
     }
 
-    public void validateAccount(String sagaId, TransactionRequest transactionRequest){
+    public void validateAccounts(String sagaId, TransactionRequest transactionRequest){
         TransactionSagaState transactionSagaState = sagaStateRepository.findById(sagaId).orElseThrow();
         transactionSagaState.setCurrentStep(TransactionSagaStep.VALIDATE_ORIGIN_ACCOUNT);
         transactionSagaState.setTransactionSagaStatus(TransactionSagaStatus.PROCESSING);
@@ -64,6 +64,7 @@ public class TransactionOrchestratorService implements ITransactionOrchestratorS
                 ValidateAccountCommand.newBuilder()
                         .setSagaId(sagaId)
                         .setAccountNumber(transactionRequest.getSourceAccountNumber())
+                        .setDestinationAccountNumber(transactionRequest.getDestinationAccountNumber())
                         .build();
         template.send("VALIDATE_ACCOUNT_CMD", validateAccountCommand);
     }

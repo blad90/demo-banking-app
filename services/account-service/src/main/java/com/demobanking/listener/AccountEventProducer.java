@@ -29,10 +29,11 @@ public class AccountEventProducer {
         template.send("ACCOUNT_CREATED_EVENTS_TOPIC", account.getAccountNumber(), accountCreatedEvent);
     }
 
-    public void publishAccountValidated(String sagaId, AccountDTO accountDTO){
+    public void publishAccountValidated(String sagaId, AccountDTO accountDTO, AccountDTO destinationAccountDTO){
         AccountValidatedEvent accountCreatedEvent = AccountValidatedEvent.newBuilder()
                 .setSagaId(sagaId)
                 .setAccountNumber(accountDTO.getAccountNumber())
+                .setDestinationAccountNumber(destinationAccountDTO.getAccountNumber())
                 .setAccountState(AccountState.ACCOUNT_VALIDATED)
                 .setValidated(true)
                 .build();
