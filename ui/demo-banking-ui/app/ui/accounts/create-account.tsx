@@ -12,14 +12,15 @@ export default function CreateAccount({user} : any){
     const [sagaId, setSagaId] = useState('');
 
     const router = useRouter();
+    
 
     async function handleSubmit(e: FormEvent) {
         e.preventDefault();
         setMessage('');
         try {
-            const res = await fetch('/api/accounts', {
+            const res = await fetch(`/api/accounts`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { "Content-Type": "application/json"},
                 body: JSON.stringify({ userId, accountType })
             });
 
@@ -31,6 +32,7 @@ export default function CreateAccount({user} : any){
             pollStatus(data.sagaId);
             setAccountType('');
         } catch (err: any) {
+            console.log(err)
             setMessage(err.message || 'There was an error');
         } finally {
         }

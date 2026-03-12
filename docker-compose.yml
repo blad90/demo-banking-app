@@ -41,6 +41,12 @@ services:
       - SPRING_JPA_HIBERNATE_DDL_AUTO=update
       - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9092
       - SCHEMA_REGISTRY_URL=http://schema-registry:8081
+      - KEYCLOAK_AUTH_SERVER_URL=http://keycloak:8080/auth
+      - KEYCLOAK_REALM=demo-bank-realm
+      - KEYCLOAK_RESOURCE=user-service
+      - KEYCLOAK_USERNAME=admin
+      - KEYCLOAK_PASSWORD=admin
+      - KEYCLOAK_CREDENTIALS_SECRET=pciBzBQiRyTfRJ1vo1tWVLwKu10zpHAJ
     depends_on:
       postgres:
         condition: service_healthy
