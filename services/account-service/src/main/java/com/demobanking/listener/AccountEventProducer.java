@@ -17,7 +17,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class AccountEventProducer {
 
-    private final KafkaTemplate<String, Message> template;
+    private final KafkaTemplate<String, byte[]> template;
 
     public void publishAccountCreated(String sagaId, Account account){
         AccountCreatedEvent accountCreatedEvent = AccountCreatedEvent.newBuilder()
@@ -26,7 +26,8 @@ public class AccountEventProducer {
                 .setAccountState(AccountState.ACCOUNT_CREATED)
                 .setSagaId(sagaId)
                 .build();
-        template.send("ACCOUNT_CREATED_EVENTS_TOPIC", account.getAccountNumber(), accountCreatedEvent);
+        byte[] data = accountCreatedEvent.toByteArray();
+        template.send("ACCOUNT_CREATED_EVENTS_TOPIC", account.getAccountNumber(), data);
     }
 
     public void publishAccountValidated(String sagaId, AccountDTO accountDTO, AccountDTO destinationAccountDTO){
@@ -37,7 +38,8 @@ public class AccountEventProducer {
                 .setAccountState(AccountState.ACCOUNT_VALIDATED)
                 .setValidated(true)
                 .build();
-        template.send("ACCOUNT_VALIDATED_EVENTS_TOPIC", accountDTO.getAccountNumber(), accountCreatedEvent);
+        byte[] data = accountCreatedEvent.toByteArray();
+        template.send("ACCOUNT_VALIDATED_EVENTS_TOPIC", accountDTO.getAccountNumber(), data);
     }
 
     public void publishAccountsBalancesUpdated(String sagaId, Account sourceAccount, Account destinationAccount){
@@ -46,7 +48,8 @@ public class AccountEventProducer {
                 .setDestinationAccountNumber(destinationAccount.getAccountNumber())
                 .setSagaId(sagaId)
                 .build();
-        template.send("ACCOUNTS_BALANCES_UPDATED_EVENTS_TOPIC", sagaId, accountsBalancesUpdatedEvent);
+        byte[] data = accountsBalancesUpdatedEvent.toByteArray();
+        template.send("ACCOUNTS_BALANCES_UPDATED_EVENTS_TOPIC", sagaId, data);
     }
 
     public void publishAccountNotValidated(String sagaId, String message){
@@ -56,7 +59,8 @@ public class AccountEventProducer {
                 .setMessage(message)
                 .setValidated(false)
                 .build();
-        template.send("ACCOUNT_NOT_VALIDATED_TOPIC", sagaId, accountNotValidatedEvent);
+        byte[] data = accountNotValidatedEvent.toByteArray();
+        template.send("ACCOUNT_NOT_VALIDATED_TOPIC", sagaId, data);
     }
 
 //    public void publishAccountNotCreated(){

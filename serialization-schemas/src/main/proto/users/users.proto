@@ -2,6 +2,7 @@ syntax = "proto3";
 
 package users;
 option java_package = "com.demobanking.events";
+option go_package = "internal/model;model";
 
 // The Command: Account Orchestrator -> User Service
 message ValidateUserCommand {

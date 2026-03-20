@@ -14,7 +14,7 @@ export default async function Page(props: {
     const query = searchParams?.query || '';
     const currentPage = Number(searchParams?.page) || 1;
 
-    return <main>
+    return <main className="pt-32">
         <div className="mt-4 flex items-center justify-between gap-2 md:mt-8">
         <Search placeholder="Search accounts..." />
         <CreateAccountButton />

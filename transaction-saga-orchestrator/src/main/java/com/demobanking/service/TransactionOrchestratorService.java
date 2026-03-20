@@ -13,6 +13,7 @@ import com.demobanking.events.Transactions.CreateTransactionCommand;
 import com.demobanking.events.Transactions.TransactionType;
 import com.demobanking.repository.TransacSagaStateRepository;
 import com.demobanking.request.TransactionRequest;
+import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.protobuf.Message;
 import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -102,7 +103,8 @@ public class TransactionOrchestratorService implements ITransactionOrchestratorS
             topics = "ACCOUNT_VALIDATED_EVENTS_TOPIC",
             containerFactory = "accountValidatedEventListenerFactory",
             groupId = "account-service-group")
-    public void onAccountValidate(AccountValidatedEvent event) {
+    public void onAccountValidate(byte[] message) throws InvalidProtocolBufferException {
+        AccountValidatedEvent event = AccountValidatedEvent.parseFrom(message);
         TransactionSagaState transactionSagaState = sagaStateRepository.findById(event.getSagaId()).orElseThrow();
 
         if(event.getValidated()){
@@ -116,7 +118,8 @@ public class TransactionOrchestratorService implements ITransactionOrchestratorS
             topics = "ACCOUNT_NOT_VALIDATED_TOPIC",
             containerFactory = "accountNotValidatedEventListenerFactory",
             groupId = "account-service-group")
-    public void onAccountNotValidate(AccountNotValidatedEvent accountNotValidatedEvent) {
+    public void onAccountNotValidate(byte[] message) throws InvalidProtocolBufferException {
+        AccountNotValidatedEvent accountNotValidatedEvent = AccountNotValidatedEvent.parseFrom(message);
         TransactionSagaState transactionSagaState = sagaStateRepository.findById(accountNotValidatedEvent.getSagaId()).orElseThrow();
         transactionSagaState.setCurrentStep(TransactionSagaStep.REJECT_TRANSACTION);
         transactionSagaState.setTransactionSagaStatus(TransactionSagaStatus.FAILED);
@@ -128,7 +131,8 @@ public class TransactionOrchestratorService implements ITransactionOrchestratorS
             topics = "TRANSACTION_CREATED_EVENTS_TOPIC",
             groupId = "transaction-orchestrator-group",
             containerFactory = "transactionEventListenerFactory")
-    public void onTransactionCreation(TransactionCreatedEvent event) {
+    public void onTransactionCreation(byte[] message) throws InvalidProtocolBufferException {
+        TransactionCreatedEvent event = TransactionCreatedEvent.parseFrom(message);
         if(event.getTransactionType().equals(TransactionType.TRANSFER)){
             UpdateAccountsBalancesCommand updateAccountsBalancesCommand = UpdateAccountsBalancesCommand.newBuilder()
                     .setSagaId(event.getSagaId())
@@ -144,7 +148,8 @@ public class TransactionOrchestratorService implements ITransactionOrchestratorS
             topics = "ACCOUNTS_BALANCES_UPDATED_EVENTS_TOPIC",
             groupId = "transaction-orchestrator-group",
             containerFactory = "transactionEventListenerFactory")
-    public void onAccountsBalancesUpdated(TransactionCreatedEvent event) {
+    public void onAccountsBalancesUpdated(byte[] message) throws InvalidProtocolBufferException {
+        TransactionCreatedEvent event = TransactionCreatedEvent.parseFrom(message);
         TransactionSagaState transactionSagaState = sagaStateRepository.findById(event.getSagaId()).orElseThrow();
         transactionSagaState.setCurrentStep(TransactionSagaStep.COMPLETE_TRANSACTION);
         transactionSagaState.setTransactionSagaStatus(TransactionSagaStatus.COMPLETED);

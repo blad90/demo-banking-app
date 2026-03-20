@@ -91,7 +91,7 @@ export default function CreateAccount({user} : any){
     }
 
     return (
-        <div className="space-y-12">
+        <div className="pt-32 space-y-12">
             <div className="border-b border-gray-900/10 pb-12">
                 <form onSubmit={handleSubmit}>
                     <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">

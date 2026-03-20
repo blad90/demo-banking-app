@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class TransactionEventProducer {
 
-    private final KafkaTemplate<String, Message> template;
+    private final KafkaTemplate<String, byte[]> template;
 
     public void publishTransactionCreated(String sagaId, Transaction transaction){
         TransactionCreatedEvent transactionCreatedEvent = TransactionCreatedEvent.newBuilder()
@@ -26,7 +26,8 @@ public class TransactionEventProducer {
                 .setDescription(transaction.getDescription())
                 .setSagaId(sagaId)
                 .build();
-        template.send("TRANSACTION_CREATED_EVENTS_TOPIC", String.valueOf(transaction.getId()), transactionCreatedEvent);
+        byte[] data = transactionCreatedEvent.toByteArray();
+        template.send("TRANSACTION_CREATED_EVENTS_TOPIC", sagaId, data);
     }
 
 //    public void publishAccountNotCreated(){

@@ -17,7 +17,7 @@ export default async function Page(props: {
         //const totalPages = await getTransactionsPages(query);
         
 
-    return <main>
+    return <main className="pt-32">
         <div className="mt-4 flex items-center justify-between gap-2 md:mt-8">
             <Search placeholder="Search transactions..." />
             <TransferButton/>

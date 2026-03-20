@@ -52,6 +52,7 @@ Spring Boot microservices, Kafka, OpenTelemetry tracing, Docker and Terraform.
   `eval $(minikube docker-env)`
   - To enable Headlamp for pods monitoring in Kubernetes, directly from official site:\
   - `kubectl apply -f https://raw.githubusercontent.com/kubernetes-sigs/headlamp/main/kubernetes-headlamp.yaml`
-
+  - If Go microservice, to generate a protobuf file from root project path:\
+  e.g. `protoc -I=serialization-schemas/src/main/proto --go_out=services/notification-service transactions/transactions.proto`
 ## License
 Licensed under the Apache License, Version 2.0. See [LICENSE](LICENSE) for details.
