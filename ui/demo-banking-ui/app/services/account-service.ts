@@ -25,10 +25,10 @@ export async function getAccountsPages(page: Number, size: Number, sort: string)
     return data.totalPages;
 }
 
-export async function getAccountsByCustomerIdByPage(page: number, size: number, sort: string){
+export async function getAccountsByCustomerIdByPage(query: string, page: number, size: number, sortField: string, sortDirection: string){
   const user = await getCustomerByUserSessionId(session?.userId!);
 
-  const res = await fetch(`${process.env.ACCOUNT_SERVICE_API_URL}/page/all/${user.id}?page=${page}&size=${size}`, { cache: 'no-cache'});
+  const res = await fetch(`${process.env.ACCOUNT_SERVICE_API_URL}/page/all/${user.id}?query=${query}&page=${page}&size=${size}&sort=${sortField},${sortDirection}`, { cache: 'no-cache'});
   if(!res.ok){
         throw new Error('Failed to fetch accounts');
     }

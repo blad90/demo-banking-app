@@ -157,8 +157,8 @@ public class AccountServiceImpl implements IAccountService{
     }
 
     @Override
-    public Page<AccountDTO> findAllAccountsByCustomerId(Long customerId, Pageable pageable) {
-        return accountRepository.findAllByCustomerId(customerId, pageable)
+    public Page<AccountDTO> findAllAccountsByCustomerId(Long customerId, String query, Pageable pageable) {
+        return accountRepository.findAllByCustomerIdAndAccountNumberContainingIgnoreCase(customerId, query, pageable)
                 .map(account -> AccountMapper.mapToDTO(0L, account));
     }
 

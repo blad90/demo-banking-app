@@ -61,7 +61,11 @@ public class AccountController {
     }
 
     @GetMapping("/page/all/search")
-    public ResponseEntity<Page<AccountDTO>> getAllAccountsPageable(Pageable pageable, @RequestParam String query) {
+    public ResponseEntity<Page<AccountDTO>> getAllAccountsPageable(@RequestParam String query,
+                                                                   @RequestParam(defaultValue = "0") int page,
+                                                                   @RequestParam(defaultValue = "10") int size,
+                                                                   @RequestParam(defaultValue = "accountCreationDate") String accountCreationDate) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(accountCreationDate).descending());
         Page<AccountDTO> allAccounts = accountService.findAllFilteredAccounts(query, pageable);
         return new ResponseEntity<>(allAccounts, HttpStatus.OK);
     }
@@ -69,11 +73,12 @@ public class AccountController {
     @GetMapping("/page/all/{customerId}")
     public ResponseEntity<Page<AccountDTO>> getAllAccountsByCustomerIdPageable(
             @PathVariable Long customerId,
+            @RequestParam String query,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "accountCreationDate") String accountCreationDate) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(accountCreationDate).descending());
-        Page<AccountDTO> allAccounts = accountService.findAllAccountsByCustomerId(customerId, pageable);
+        Page<AccountDTO> allAccounts = accountService.findAllAccountsByCustomerId(customerId, query, pageable);
         return new ResponseEntity<>(allAccounts, HttpStatus.OK);
     }
 

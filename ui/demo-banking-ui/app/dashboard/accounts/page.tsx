@@ -8,10 +8,14 @@ export default async function Page(props: {
   searchParams?: Promise<{
     query?: string;
     page?: string;
+    sortField?: string;
+    sortDirection?: string;
   }>;
 }){
     const searchParams = await props.searchParams;
     const query = searchParams?.query || '';
+    const sortField = searchParams?.sortField || 'accountCreationDate';
+    const sortDirection = searchParams?.sortDirection || 'desc'
     const currentPage = Number(searchParams?.page) || 1;
 
     return <main className="pt-32">
@@ -21,7 +25,7 @@ export default async function Page(props: {
       </div>
         <h1 className="text-3xl font-bold">Accounts</h1>
         <Suspense key={query + currentPage} fallback={<TableRowSkeleton />}>
-            <AccountsTable query={query} currentPage={currentPage}/>
+            <AccountsTable query={query} currentPage={currentPage} sortField={sortField} sortDirection={sortDirection}/>
         </Suspense>
     </main>
 }

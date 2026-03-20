@@ -13,6 +13,6 @@ import java.util.Optional;
 public interface IAccountRepository extends JpaRepository<Account, Long> {
     Optional<Account> findAccountByAccountNumber(String accountNumber);
     List<Account> findAllByAccountNumberIn(List<String> accountNumbers);
-    Page<Account> findAllByCustomerId(Long customerId, Pageable pageable);
+    Page<Account> findAllByCustomerIdAndAccountNumberContainingIgnoreCase(Long customerId, String accountNumber, Pageable pageable);
     Page<Account> findAllByAccountNumberContainingIgnoreCase(String accountNumber, Pageable pageable);
 }
