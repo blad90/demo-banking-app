@@ -22,7 +22,10 @@ func main() {
 	)
 
 	go consumer.Start(context.Background(), func(event model.TransactionCreatedEvent) {
-		broker.Broadcast(event.TransactionType.String())
+		descriptionDetail := "Customer ID: " + event.CustomerId + " ; Account No." + event.SourceAccountNumber + " Destination account: " +
+			event.DestinationAccountNumber + " Amount: " + event.Amount + " Description: " + event.Description
+
+		broker.Broadcast(descriptionDetail)
 	})
 
 	http.HandleFunc("/events", delivery.SSEHandler(broker))

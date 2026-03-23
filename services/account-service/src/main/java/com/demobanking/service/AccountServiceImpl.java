@@ -32,22 +32,21 @@ public class AccountServiceImpl implements IAccountService{
             groupId = "ACCOUNT_EVENT_GROUP",
             containerFactory = "validateAcctKafkaListenerContainerFactory")
     public void onAccountValidate(ValidateAccountCommand validateAccountCommand)  {
-
         try{
-            Account account = accountRepository
-                    .findAccountByAccountNumber(validateAccountCommand.getAccountNumber())
-                    .orElseThrow(() -> new BankAccountNotFoundException(validateAccountCommand.getAccountNumber()));
-            AccountDTO accountDTO = AccountMapper.mapToDTO(account.getCustomerId(), account);
-
-            Account destinationAccount = accountRepository
-                    .findAccountByAccountNumber(validateAccountCommand.getDestinationAccountNumber())
-                    .orElseThrow(() -> new BankAccountNotFoundException(validateAccountCommand.getDestinationAccountNumber()));
-            AccountDTO destinationAccountDTO = AccountMapper.mapToDTO(destinationAccount.getCustomerId(), destinationAccount);
-
+            AccountDTO accountDTO = validateAccount(validateAccountCommand.getAccountNumber());
+            AccountDTO destinationAccountDTO = validateAccount(validateAccountCommand.getDestinationAccountNumber());
             accountEventProducer.publishAccountValidated(validateAccountCommand.getSagaId(), accountDTO, destinationAccountDTO);
         } catch (BankAccountNotFoundException e){
             accountEventProducer.publishAccountNotValidated(validateAccountCommand.getSagaId(), e.getMessage());
         }
+    }
+
+    private AccountDTO validateAccount(String accountNumber){
+        Account account = accountRepository
+                .findAccountByAccountNumber(accountNumber)
+                .orElseThrow(() -> new BankAccountNotFoundException(accountNumber));
+
+        return AccountMapper.mapToDTO(account.getCustomerId(), account);
     }
 
     public void openAccount(CreateAccountCommand createAccountCommand) {
