@@ -7,7 +7,7 @@ export default function OBLogo() {
     <div
       className={`${lusitana.className} flex flex-row items-center leading-none text-white`}
     >
-      {/* <GlobeAltIcon className="h-12 w-12 rotate-[15deg]" /> */}
+      {/* <GlobeAltIcon className="h-12 w-12 rotate-15" /> */}
       <Image loading='eager' src="/OB.png" width={80} height={90} className='hidden md:block'
                   alt='OB DemoBank project...'/>
       {/* <p className="text-[44px]">OB DemoBank</p> */}

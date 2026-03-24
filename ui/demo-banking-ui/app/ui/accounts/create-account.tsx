@@ -100,7 +100,7 @@ export default function CreateAccount({user} : any){
                             <div className="mt-2">
                                 <div className="flex items-center rounded-md bg-white pl-3 outline-1 -outline-offset-1 outline-gray-300 focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-indigo-600">
                                     <input
-                                        className="block min-w-0 grow bg-white py-1.5 pr-3 pl-1 text-base text-gray-900 placeholder:text-gray-300 focus:outline-none sm:text-sm/6"
+                                        className="block min-w-0 grow bg-white py-1.5 pr-3 pl-1 text-base text-gray-900 placeholder:text-gray-300 focus:outline-hidden sm:text-sm/6"
                                         type="number"
                                         value={userId}
                                         disabled
@@ -116,7 +116,7 @@ export default function CreateAccount({user} : any){
                             <div className="mt-2">
                                 <div className="flex items-center rounded-md bg-white pl-3 outline-1 -outline-offset-1 outline-gray-300 focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-indigo-600">
                                     <input
-                                        className="block min-w-0 grow bg-white py-1.5 pr-3 pl-1 text-base text-gray-900 placeholder:text-gray-300 focus:outline-none sm:text-sm/6"
+                                        className="block min-w-0 grow bg-white py-1.5 pr-3 pl-1 text-base text-gray-900 placeholder:text-gray-300 focus:outline-hidden sm:text-sm/6"
                                         type="text"
                                         value={accountType}
                                         onChange={e => setAccountType(e.target.value)}
@@ -133,7 +133,7 @@ export default function CreateAccount({user} : any){
                             disabled={
                                 status === "STARTED" || status === "PROCESSING"
                             }
-                            className="bg-[#006D77] hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                            className="bg-[#006D77] hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-sm"
                         >
                             {status === "STARTED" || status === "PROCESSING"
                                 ? "Processing..."

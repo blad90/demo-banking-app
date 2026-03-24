@@ -113,7 +113,7 @@ export default function Transfer({user} : any){
                                 <div className="flex items-center rounded-md bg-white pl-3 outline-1 -outline-offset-1 outline-gray-300 focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-indigo-600">
                                     <input
                                         id="sourceAccountInput"
-                                        className="block min-w-0 grow bg-white py-1.5 pr-3 pl-1 text-base text-gray-900 placeholder:text-gray-300 focus:outline-none sm:text-sm/6"
+                                        className="block min-w-0 grow bg-white py-1.5 pr-3 pl-1 text-base text-gray-900 placeholder:text-gray-300 focus:outline-hidden sm:text-sm/6"
                                         type="text"
                                         value={sourceAccountNumber}
                                         onChange={e => setSourceAccountNumber(e.target.value)}
@@ -132,7 +132,7 @@ export default function Transfer({user} : any){
                                 <div className="flex items-center rounded-md bg-white pl-3 outline-1 -outline-offset-1 outline-gray-300 focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-indigo-600">
                                     <input
                                         id="destinationAccountInput"
-                                        className="block min-w-0 grow bg-white py-1.5 pr-3 pl-1 text-base text-gray-900 placeholder:text-gray-300 focus:outline-none sm:text-sm/6"
+                                        className="block min-w-0 grow bg-white py-1.5 pr-3 pl-1 text-base text-gray-900 placeholder:text-gray-300 focus:outline-hidden sm:text-sm/6"
                                         type="text"
                                         value={destinationAccountNumber}
                                         onChange={e => setDestinationAccountNumber(e.target.value)}
@@ -151,7 +151,7 @@ export default function Transfer({user} : any){
                                 <div className="flex items-center rounded-md bg-white pl-3 outline-1 -outline-offset-1 outline-gray-300 focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-indigo-600">
                                     <input
                                         id="transactionAmountInput"
-                                        className="block min-w-0 grow bg-white py-1.5 pr-3 pl-1 text-base text-gray-900 placeholder:text-gray-300 focus:outline-none sm:text-sm/6"
+                                        className="block min-w-0 grow bg-white py-1.5 pr-3 pl-1 text-base text-gray-900 placeholder:text-gray-300 focus:outline-hidden sm:text-sm/6"
                                         type="number"
                                         value={amount}
                                         onChange={e => setAmount(Number(e.target.value))}
@@ -169,7 +169,7 @@ export default function Transfer({user} : any){
                                 <div className="flex items-center rounded-md bg-white pl-3 outline-1 -outline-offset-1 outline-gray-300 focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-indigo-600">
                                     <input
                                         id="transactionDescriptionInput"
-                                        className="block min-w-0 grow bg-white py-1.5 pr-3 pl-1 text-base text-gray-900 placeholder:text-gray-300 focus:outline-none sm:text-sm/6"
+                                        className="block min-w-0 grow bg-white py-1.5 pr-3 pl-1 text-base text-gray-900 placeholder:text-gray-300 focus:outline-hidden sm:text-sm/6"
                                         type="text"
                                         value={description}
                                         onChange={e => setDescription(e.target.value)}
@@ -190,7 +190,7 @@ export default function Transfer({user} : any){
                                         id="transactionTypeInput"
                                         value={transactionType}
                                         onChange={(e) => setTransactionType(e.target.value)}
-                                        className="block w-full rounded-md bg-white py-2 px-3 text-sm text-gray-900 outline outline-1 outline-gray-300 focus:outline-2 focus:outline-indigo-600">
+                                        className="block w-full rounded-md bg-white py-2 px-3 text-sm text-gray-900 outline-solid outline-1 outline-gray-300 focus:outline-2 focus:outline-indigo-600">
                                         <option>--</option>
                                         <option value="TRANSFER">TRANSFER</option>
                                         <option value="OTHER">OTHER</option>
@@ -206,7 +206,7 @@ export default function Transfer({user} : any){
   disabled={
     status === "STARTED" || status === "PROCESSING"
   }
-  className="bg-[#006D77] hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+  className="bg-[#006D77] hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-sm"
 >
   {status === "STARTED" || status === "PROCESSING"
     ? "Processing..."
