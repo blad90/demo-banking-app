@@ -27,7 +27,8 @@ public class AccountMapper {
                 accountDTO.getAccountType(),
                 accountDTO.getAccountCreationDate(),
                 accountDTO.getAccountLastUpdated(),
-                accountDTO.getAccountState()
+                accountDTO.getAccountState(),
+                null // version - not tracked on the DTO; left for Hibernate to manage
         );
         return account;
     }

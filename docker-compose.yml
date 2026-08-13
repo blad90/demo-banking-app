@@ -110,13 +110,54 @@ services:
       ports:
         - "8087:8087"
       environment:
+        - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/account_saga_states_db
+        - SPRING_DATASOURCE_USERNAME=test
+        - SPRING_DATASOURCE_PASSWORD=test
         - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9092
         - SCHEMA_REGISTRY_URL=http://schema-registry:8081
       depends_on:
+       postgres:
+         condition: service_healthy
        kafka:
          condition: service_started
        schema-registry:
         condition: service_started
+      restart: unless-stopped
+
+  transaction-orchestrator:
+      build:
+        context: .
+        dockerfile: transaction-saga-orchestrator/Dockerfile
+      image: transaction-orchestrator
+      ports:
+        - "8088:8088"
+      environment:
+        - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/transaction_saga_states_db
+        - SPRING_DATASOURCE_USERNAME=test
+        - SPRING_DATASOURCE_PASSWORD=test
+        - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+        - SCHEMA_REGISTRY_URL=http://schema-registry:8081
+      depends_on:
+       postgres:
+         condition: service_healthy
+       kafka:
+         condition: service_started
+       schema-registry:
+        condition: service_started
+      restart: unless-stopped
+
+  notification-service:
+      build:
+        context: .
+        dockerfile: services/notification-service/Dockerfile
+      image: notification-service:latest
+      ports:
+        - "8086:8086"
+      environment:
+        - KAFKA_BROKERS=kafka:9092
+      depends_on:
+        kafka:
+          condition: service_started
       restart: unless-stopped
 
   kafka:

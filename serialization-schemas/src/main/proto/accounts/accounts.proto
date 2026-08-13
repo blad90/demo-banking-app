@@ -3,13 +3,6 @@ syntax = "proto3";
 package accounts;
 option java_package = "com.demobanking.events";
 
-// Old message - for backward compatibility
-message ProcessAccountCreationCommand {
-  string account_number = 1;
-  int64 user_id = 2;
-  string account_type = 3;
-}
-
 // The Command: Account Orchestrator -> Account Service
 message CreateAccountCommand {
   string saga_id = 1;

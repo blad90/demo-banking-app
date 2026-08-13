@@ -7,6 +7,7 @@ import com.demobanking.events.Accounts.UpdateAccountsBalancesCommand;
 import com.demobanking.events.Accounts.ValidateAccountCommand;
 import com.demobanking.events.Accounts.CreateAccountCommand;
 import com.demobanking.exceptions.BankAccountNotFoundException;
+import com.demobanking.exceptions.InsufficientFundsException;
 import com.demobanking.listener.AccountEventProducer;
 import com.demobanking.repository.IAccountRepository;
 import com.demobanking.utils.AccountMapper;
@@ -15,6 +16,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.Collection;
@@ -62,15 +64,24 @@ public class AccountServiceImpl implements IAccountService{
     }
 
     @Override
+    @Transactional
     public void updateAccountsBalances(UpdateAccountsBalancesCommand updateAccountsBalancesCommand) {
-        Account sourceAccount = accountRepository.findAccountByAccountNumber(updateAccountsBalancesCommand.getSourceAccountNumber()).get();
-        Account destinationAccount = accountRepository.findAccountByAccountNumber(updateAccountsBalancesCommand.getDestinationAccountNumber()).get();
-        BigDecimal sourceBalance = sourceAccount.getBalance();
-        BigDecimal destinationBalance = destinationAccount.getBalance();
+        Account sourceAccount = accountRepository
+                .findAccountByAccountNumber(updateAccountsBalancesCommand.getSourceAccountNumber())
+                .orElseThrow(() -> new BankAccountNotFoundException(updateAccountsBalancesCommand.getSourceAccountNumber()));
+        Account destinationAccount = accountRepository
+                .findAccountByAccountNumber(updateAccountsBalancesCommand.getDestinationAccountNumber())
+                .orElseThrow(() -> new BankAccountNotFoundException(updateAccountsBalancesCommand.getDestinationAccountNumber()));
 
-        sourceAccount.setBalance(sourceBalance.subtract((new BigDecimal(updateAccountsBalancesCommand.getAmount()))));
+        BigDecimal amount = new BigDecimal(updateAccountsBalancesCommand.getAmount());
+        BigDecimal sourceBalanceAfterDebit = sourceAccount.getBalance().subtract(amount);
 
-        destinationAccount.setBalance(destinationBalance.add((new BigDecimal(updateAccountsBalancesCommand.getAmount()))));
+        if (sourceBalanceAfterDebit.compareTo(BigDecimal.ZERO) < 0) {
+            throw new InsufficientFundsException(sourceAccount.getAccountNumber(), amount);
+        }
+
+        sourceAccount.setBalance(sourceBalanceAfterDebit);
+        destinationAccount.setBalance(destinationAccount.getBalance().add(amount));
 
         accountRepository.save(sourceAccount);
         accountRepository.save(destinationAccount);

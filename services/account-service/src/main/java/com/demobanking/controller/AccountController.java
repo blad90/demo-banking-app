@@ -1,7 +1,6 @@
 package com.demobanking.controller;
 
 import com.demobanking.dto.AccountDTO;
-import com.demobanking.events.Accounts.AccountRequest;
 import com.demobanking.service.IAccountService;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -21,17 +20,6 @@ import java.util.UUID;
 public class AccountController {
 
     private IAccountService accountService;
-
-    @PostMapping("/create")
-    public ResponseEntity<String> createAccount(@RequestBody AccountRequest accountRequest) {
-//        CreateAccountCommand createAccountCommand = new CreateAccountCommand(
-//                "OB-" + UUID.randomUUID().toString().substring(0,7).toUpperCase(),
-//                accountRequest.getUserId(),
-//                accountRequest.getAccountType()
-//        );
-//        accountService.openAccount(createAccountCommand);
-        return new ResponseEntity<>("Account creation accepted.", HttpStatus.OK);
-    }
 
     @GetMapping("/{accountNumber}")
     public ResponseEntity<AccountDTO> getAccount(@PathVariable String accountNumber) {

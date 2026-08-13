@@ -5,6 +5,8 @@ import (
 	"context"
 	"log"
 	"net/http"
+	"os"
+	"strings"
 
 	"demobanking.com/notification/internal/consumer"
 	"demobanking.com/notification/internal/delivery"
@@ -12,11 +14,18 @@ import (
 	"demobanking.com/notification/internal/notifier"
 )
 
+func kafkaBrokers() []string {
+	if raw := os.Getenv("KAFKA_BROKERS"); raw != "" {
+		return strings.Split(raw, ",")
+	}
+	return []string{"localhost:9092"}
+}
+
 func main() {
 	broker := notifier.NewBroker()
 
 	consumer := consumer.NewConsumer(
-		[]string{"localhost:9092"},
+		kafkaBrokers(),
 		"TRANSACTION_CREATED_EVENTS_TOPIC",
 		"transaction-orchestrator-group-GO",
 	)

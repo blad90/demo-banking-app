@@ -31,6 +31,8 @@ public class Account {
     @Enumerated(EnumType.STRING)
     @Column(name = "account_state")
     private AccountState accountState;
+    @Version
+    private Long version;
 
     public Account(String accountNumber, Long customerId, String accountType, AccountState accountState) {
         this.accountNumber = accountNumber;

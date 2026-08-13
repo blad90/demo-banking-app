@@ -1,7 +1,6 @@
 package com.demobanking.listener;
 
 import com.demobanking.entity.Transaction;
-import com.demobanking.events.Transactions;
 import com.demobanking.events.Transactions.TransactionState;
 import com.demobanking.events.Transactions.TransactionCreatedEvent;
 import com.google.protobuf.Message;
@@ -20,7 +19,7 @@ public class TransactionEventProducer {
                 .setSourceAccountNumber(transaction.getSourceAccountNumber())
                 .setDestinationAccountNumber(transaction.getDestinationAccountNumber())
                 .setCorrelationId(String.valueOf(transaction.getCorrelationId()))
-                .setTransactionType(Transactions.TransactionType.TRANSFER)
+                .setTransactionType(transaction.getType())
                 .setTransactionState(TransactionState.TRAN_COMPLETED)
                 .setAmount(String.valueOf(transaction.getTransactionAmount()))
                 .setDescription(transaction.getDescription())
