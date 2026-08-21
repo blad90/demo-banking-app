@@ -8,6 +8,7 @@ import (
 	"os"
 	"strings"
 
+	"demobanking.com/notification/internal/auth"
 	"demobanking.com/notification/internal/consumer"
 	"demobanking.com/notification/internal/delivery"
 	"demobanking.com/notification/internal/model"
@@ -19,6 +20,13 @@ func kafkaBrokers() []string {
 		return strings.Split(raw, ",")
 	}
 	return []string{"localhost:9092"}
+}
+
+func oidcIssuerURL() string {
+	if raw := os.Getenv("OIDC_ISSUER_URL"); raw != "" {
+		return raw
+	}
+	return "http://localhost:9090/realms/demo-bank-realm"
 }
 
 func main() {
@@ -37,7 +45,7 @@ func main() {
 		broker.Broadcast(descriptionDetail)
 	})
 
-	http.HandleFunc("/events", delivery.SSEHandler(broker))
+	http.HandleFunc("/events", auth.RequireToken(oidcIssuerURL())(delivery.SSEHandler(broker)))
 
 	log.Println("Server running on : 8086")
 	log.Fatal(http.ListenAndServe(":8086", nil))

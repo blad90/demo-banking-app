@@ -6,17 +6,15 @@ export async function POST(request: NextRequest){
     const body = await request.json();
     const session = await auth();
 
-    console.log(session?.accessToken)
-
     if (!session || !session.accessToken) {
         return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const response = await fetch(`http://localhost:8087/orchestrator/processAccountCreation`, {
+    const response = await fetch(`${process.env.ACCOUNT_SAGA_ORCHESTRATOR_API_URL}`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
-            "Authorization": `Bearer ${session?.accessToken}`,
+            "Authorization": `Bearer ${session.accessToken}`,
         },
         body: JSON.stringify(body),
     });

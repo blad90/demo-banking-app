@@ -62,7 +62,10 @@ services:
       dockerfile: services/account-service/Dockerfile
     image: account-service:latest
     ports:
-      - "8082:8082"
+      # Bound to localhost only - has no auth of its own, so it should only be reachable
+      # from this machine (e.g. a locally-run UI) or from other containers on this network
+      # (e.g. the gateway), not from anywhere else that can reach this host.
+      - "127.0.0.1:8082:8082"
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/accounts_db
       - SPRING_DATASOURCE_USERNAME=test
@@ -85,7 +88,8 @@ services:
       dockerfile: services/transaction-service/Dockerfile
     image: transaction-service:latest
     ports:
-      - "8083:8083"
+      # See account-service above - localhost-only, no auth of its own.
+      - "127.0.0.1:8083:8083"
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/transactions_db
       - SPRING_DATASOURCE_USERNAME=test
@@ -108,7 +112,8 @@ services:
         dockerfile: account-saga-orchestrator/Dockerfile
       image: account-orchestrator
       ports:
-        - "8087:8087"
+        # See account-service above - localhost-only, no auth of its own.
+        - "127.0.0.1:8087:8087"
       environment:
         - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/account_saga_states_db
         - SPRING_DATASOURCE_USERNAME=test
@@ -130,7 +135,8 @@ services:
         dockerfile: transaction-saga-orchestrator/Dockerfile
       image: transaction-orchestrator
       ports:
-        - "8088:8088"
+        # See account-service above - localhost-only, no auth of its own.
+        - "127.0.0.1:8088:8088"
       environment:
         - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/transaction_saga_states_db
         - SPRING_DATASOURCE_USERNAME=test
@@ -155,8 +161,11 @@ services:
         - "8086:8086"
       environment:
         - KAFKA_BROKERS=kafka:9092
+        - OIDC_ISSUER_URL=http://keycloak:8080/realms/demo-bank-realm
       depends_on:
         kafka:
+          condition: service_started
+        keycloak:
           condition: service_started
       restart: unless-stopped
 
