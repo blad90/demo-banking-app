@@ -31,13 +31,18 @@ public class TransactionSagaState {
     private TransactionSagaStatus transactionSagaStatus;
     @Enumerated(EnumType.STRING)
     private TransactionSagaStep currentStep;
+    // Optional, client-supplied - lets a retried/duplicated POST resolve back to the same saga
+    // instead of starting a second one. Postgres allows multiple NULLs under a UNIQUE constraint,
+    // so requests that don't supply a key are never deduplicated against each other.
+    @Column(unique = true)
+    private String idempotencyKey;
 
     @CreationTimestamp
     private LocalDateTime creationDate;
     @UpdateTimestamp
     private LocalDateTime lastUpdated;
 
-    public TransactionSagaState(String sagaId, String correlationId, Long customerId, String sourceAccountNumber, String destinationAccountNumber, BigDecimal amount, TransactionType transactionType, String transactionDescription, TransactionSagaStatus transactionSagaStatus, TransactionSagaStep currentStep) {
+    public TransactionSagaState(String sagaId, String correlationId, Long customerId, String sourceAccountNumber, String destinationAccountNumber, BigDecimal amount, TransactionType transactionType, String transactionDescription, TransactionSagaStatus transactionSagaStatus, TransactionSagaStep currentStep, String idempotencyKey) {
         this.sagaId = sagaId;
         this.correlationId = correlationId;
         this.customerId = customerId;
@@ -48,5 +53,6 @@ public class TransactionSagaState {
         this.transactionDescription = transactionDescription;
         this.transactionSagaStatus = transactionSagaStatus;
         this.currentStep = currentStep;
+        this.idempotencyKey = idempotencyKey;
     }
 }

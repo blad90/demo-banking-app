@@ -13,6 +13,7 @@ message CreateTransactionCommand {
   string transaction_state = 5;
   string description = 6;
   string customer_id = 7;
+  string amount = 8;
 }
 enum TransactionType {
     DEBIT = 0;
@@ -58,4 +59,19 @@ message TransferCommand {
   string amount = 5;
   string description = 6;
   string customer_id = 7;
+}
+
+// The Command: Transaction Orchestrator -> Transaction Service
+// Compensating action: reverses a transaction record already marked TRAN_COMPLETED
+// after the balance update it was waiting on turned out to fail.
+message CancelTransactionCommand {
+  string saga_id = 1;
+  string correlation_id = 2;
+  string message = 3;
+}
+
+// The Event: Transaction Service -> Transaction Orchestrator
+message TransactionCancelledEvent {
+  string saga_id = 1;
+  string correlation_id = 2;
 }

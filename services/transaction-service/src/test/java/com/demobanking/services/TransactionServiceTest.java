@@ -2,13 +2,18 @@ package com.demobanking.services;
 
 import com.demobanking.dto.TransactionDTO;
 import com.demobanking.entity.Transaction;
+import com.demobanking.events.Transactions.CreateTransactionCommand;
+import com.demobanking.events.Transactions.CancelTransactionCommand;
+import com.demobanking.events.Transactions.TransactionState;
 import com.demobanking.events.Transactions.TransactionType;
+import com.demobanking.listener.TransactionEventProducer;
 import com.demobanking.repository.ITransactionRepository;
 import com.demobanking.service.TransactionServiceImpl;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -30,6 +35,8 @@ import static org.mockito.Mockito.when;
 public class TransactionServiceTest {
     @Mock
     private ITransactionRepository transactionRepository;
+    @Mock
+    private TransactionEventProducer transactionEventProducer;
 
     @InjectMocks
     private TransactionServiceImpl transactionService;
@@ -77,5 +84,83 @@ public class TransactionServiceTest {
         TransactionDTO result = transactionService.retrieveTransactionById(id);
 
         Assertions.assertNull(result);
+    }
+
+    @Test
+    @DisplayName("Test Case: Creating a DEBIT transaction persists it against a single account and publishes it")
+    public void testCreateTransactionDebit(){
+        String correlationId = UUID.randomUUID().toString();
+        CreateTransactionCommand command = CreateTransactionCommand.newBuilder()
+                .setSagaId("saga-1")
+                .setCorrelationId(correlationId)
+                .setAccountNumber("OB-SOURCE1")
+                .setCustomerId("1")
+                .setTransactionType(TransactionType.DEBIT)
+                .setDescription("ATM withdrawal")
+                .setAmount("40.00")
+                .build();
+
+        transactionService.createTransaction(command);
+
+        ArgumentCaptor<Transaction> captor = ArgumentCaptor.forClass(Transaction.class);
+        verify(transactionRepository).save(captor.capture());
+        Transaction saved = captor.getValue();
+
+        Assertions.assertEquals("OB-SOURCE1", saved.getSourceAccountNumber());
+        Assertions.assertNull(saved.getDestinationAccountNumber());
+        Assertions.assertEquals(1L, saved.getCustomerId());
+        Assertions.assertEquals(TransactionType.DEBIT, saved.getType());
+        Assertions.assertEquals(new BigDecimal("40.00"), saved.getTransactionAmount());
+        verify(transactionEventProducer).publishTransactionCreated("saga-1", saved);
+    }
+
+    @Test
+    @DisplayName("Test Case: A redelivered CREATE_TRANSACTION_CMD for an existing correlationId is not recorded twice")
+    public void testCreateTransactionIsIdempotentOnRedelivery(){
+        UUID correlationId = UUID.randomUUID();
+        Transaction existingTransaction = new Transaction(
+                correlationId, "OB-SOURCE1", 1L, null,
+                "ATM withdrawal", new BigDecimal("40.00"), TransactionType.DEBIT);
+
+        when(transactionRepository.findByCorrelationId(correlationId)).thenReturn(Optional.of(existingTransaction));
+
+        CreateTransactionCommand command = CreateTransactionCommand.newBuilder()
+                .setSagaId("saga-2")
+                .setCorrelationId(correlationId.toString())
+                .setAccountNumber("OB-SOURCE1")
+                .setCustomerId("1")
+                .setTransactionType(TransactionType.DEBIT)
+                .setDescription("ATM withdrawal")
+                .setAmount("40.00")
+                .build();
+
+        transactionService.createTransaction(command);
+
+        verify(transactionRepository, never()).save(Mockito.any(Transaction.class));
+        verify(transactionEventProducer).publishTransactionCreated("saga-2", existingTransaction);
+    }
+
+    @Test
+    @DisplayName("Test Case: Cancelling by correlationId marks the transaction TRAN_CANCELLED and confirms back")
+    public void testCancelTransactionByCorrelationId(){
+        UUID correlationId = UUID.randomUUID();
+        Transaction existingTransaction = new Transaction(
+                correlationId, "OB-SOURCE1", 1L, null,
+                "ATM withdrawal", new BigDecimal("40.00"), TransactionType.DEBIT);
+        existingTransaction.setTransactionState(TransactionState.TRAN_COMPLETED);
+
+        when(transactionRepository.findByCorrelationId(correlationId)).thenReturn(Optional.of(existingTransaction));
+
+        CancelTransactionCommand command = CancelTransactionCommand.newBuilder()
+                .setSagaId("saga-3")
+                .setCorrelationId(correlationId.toString())
+                .setMessage("insufficient funds")
+                .build();
+
+        transactionService.cancelTransactionByCorrelationId(command);
+
+        Assertions.assertEquals(TransactionState.TRAN_CANCELLED, existingTransaction.getTransactionState());
+        verify(transactionRepository).save(existingTransaction);
+        verify(transactionEventProducer).publishTransactionCancelled("saga-3", correlationId);
     }
 }

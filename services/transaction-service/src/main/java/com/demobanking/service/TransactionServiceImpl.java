@@ -9,6 +9,7 @@ import com.demobanking.events.Transactions.TransactionState;
 import com.demobanking.events.Transactions.TransactionType;
 import com.demobanking.events.Transactions.TransferCommand;
 import com.demobanking.events.Transactions.CreateTransactionCommand;
+import com.demobanking.events.Transactions.CancelTransactionCommand;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -27,22 +28,42 @@ public class TransactionServiceImpl implements ITransactionService{
 
     @Override
     public void createTransaction(CreateTransactionCommand createTransactionCommand) {
-//        Transaction newTransaction = new Transaction(
-//                createTransactionCommand.getCorrelationId(),
-//                createTransactionCommand.getDescription(),
-//                createTransactionCommand.getA
-//        )
-//        newTransaction.setTransactionState(TransactionState.TRAN_INITIATED);
-//        newTransaction.setType(type);
+        UUID correlationId = UUID.fromString(createTransactionCommand.getCorrelationId());
+        // A redelivered CREATE_TRANSACTION_CMD must not record the same transaction twice -
+        // correlationId is generated once per saga and stable across retries.
+        var existing = transactionRepository.findByCorrelationId(correlationId);
+        if (existing.isPresent()) {
+            transactionEventProducer.publishTransactionCreated(createTransactionCommand.getSagaId(), existing.get());
+            return;
+        }
 
-//        transactionRepository.save(newTransaction);
+        Transaction newTransaction = new Transaction(
+                correlationId,
+                createTransactionCommand.getAccountNumber(),
+                Long.parseLong(createTransactionCommand.getCustomerId()),
+                null,
+                createTransactionCommand.getDescription(),
+                new BigDecimal(createTransactionCommand.getAmount()),
+                createTransactionCommand.getTransactionType());
+        newTransaction.setTransactionState(TransactionState.TRAN_COMPLETED);
+
+        transactionRepository.save(newTransaction);
+
+        transactionEventProducer.publishTransactionCreated(createTransactionCommand.getSagaId(), newTransaction);
     }
 
     @Override
     public void transfer(String sagaId, TransferCommand transferCommand) {
+        UUID correlationId = UUID.fromString(transferCommand.getCorrelationId());
+        // Same redelivery guard as createTransaction() above.
+        var existing = transactionRepository.findByCorrelationId(correlationId);
+        if (existing.isPresent()) {
+            transactionEventProducer.publishTransactionCreated(sagaId, existing.get());
+            return;
+        }
 
         Transaction newTransaction = new Transaction(
-                UUID.fromString(transferCommand.getCorrelationId()),
+                correlationId,
                 transferCommand.getSourceAccountNumber(),
                 Long.parseLong(transferCommand.getCustomerId()),
                 transferCommand.getDestinationAccountNumber(),
@@ -99,5 +120,18 @@ public class TransactionServiceImpl implements ITransactionService{
             existingTransaction.setTransactionState(TransactionState.TRAN_CANCELLED);
             transactionRepository.save(existingTransaction);
         }
+    }
+
+    @Override
+    public void cancelTransactionByCorrelationId(CancelTransactionCommand cancelTransactionCommand) {
+        UUID correlationId = UUID.fromString(cancelTransactionCommand.getCorrelationId());
+        Transaction existingTransaction = transactionRepository.findByCorrelationId(correlationId).orElse(null);
+        // Already cancelled (a redelivered CANCEL_TRANSACTION_CMD) - still confirm back to the
+        // orchestrator so a saga waiting on TRANSACTION_CANCELLED_EVENTS_TOPIC isn't left hanging.
+        if (existingTransaction != null && existingTransaction.getTransactionState() != TransactionState.TRAN_CANCELLED) {
+            existingTransaction.setTransactionState(TransactionState.TRAN_CANCELLED);
+            transactionRepository.save(existingTransaction);
+        }
+        transactionEventProducer.publishTransactionCancelled(cancelTransactionCommand.getSagaId(), correlationId);
     }
 }

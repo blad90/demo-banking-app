@@ -4,6 +4,8 @@ import com.demobanking.dto.AccountDTO;
 import com.demobanking.entity.Account;
 import com.demobanking.entity.AccountState;
 import com.demobanking.events.Accounts.UpdateAccountsBalancesCommand;
+import com.demobanking.events.Accounts.UpdateAccountBalanceCommand;
+import com.demobanking.events.Accounts.BalanceOperation;
 import com.demobanking.events.Accounts.ValidateAccountCommand;
 import com.demobanking.events.Accounts.CreateAccountCommand;
 import com.demobanking.exceptions.BankAccountNotFoundException;
@@ -12,6 +14,7 @@ import com.demobanking.listener.AccountEventProducer;
 import com.demobanking.repository.IAccountRepository;
 import com.demobanking.utils.AccountMapper;
 import lombok.AllArgsConstructor;
+import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -36,7 +39,10 @@ public class AccountServiceImpl implements IAccountService{
     public void onAccountValidate(ValidateAccountCommand validateAccountCommand)  {
         try{
             AccountDTO accountDTO = validateAccount(validateAccountCommand.getAccountNumber());
-            AccountDTO destinationAccountDTO = validateAccount(validateAccountCommand.getDestinationAccountNumber());
+            // DEBIT/CREDIT transactions only involve one account - no destination is sent for those.
+            AccountDTO destinationAccountDTO = validateAccountCommand.getDestinationAccountNumber().isEmpty()
+                    ? null
+                    : validateAccount(validateAccountCommand.getDestinationAccountNumber());
             accountEventProducer.publishAccountValidated(validateAccountCommand.getSagaId(), accountDTO, destinationAccountDTO);
         } catch (BankAccountNotFoundException e){
             accountEventProducer.publishAccountNotValidated(validateAccountCommand.getSagaId(), e.getMessage());
@@ -52,6 +58,13 @@ public class AccountServiceImpl implements IAccountService{
     }
 
     public void openAccount(CreateAccountCommand createAccountCommand) {
+        // A redelivered CREATE_ACCOUNT_CMD (e.g. the orchestrator's consumer redelivering
+        // before its offset committed) must not open a second account for the same number.
+        var existing = accountRepository.findAccountByAccountNumber(createAccountCommand.getAccountNumber());
+        if (existing.isPresent()) {
+            accountEventProducer.publishAccountCreated(createAccountCommand.getSagaId(), existing.get());
+            return;
+        }
 
         Account newAccount = new Account(
                 createAccountCommand.getAccountNumber(),
@@ -59,8 +72,15 @@ public class AccountServiceImpl implements IAccountService{
                 createAccountCommand.getAccountType(),
                 AccountState.ACCOUNT_CREATED);
         newAccount.setBalance(BigDecimal.valueOf(0.00));
-        accountRepository.save(newAccount);
-        accountEventProducer.publishAccountCreated(createAccountCommand.getSagaId(),newAccount);
+
+        try {
+            accountRepository.save(newAccount);
+        } catch (DataAccessException e) {
+            accountEventProducer.publishAccountNotCreated(
+                    createAccountCommand.getSagaId(), createAccountCommand.getAccountNumber(), e.getMessage());
+            return;
+        }
+        accountEventProducer.publishAccountCreated(createAccountCommand.getSagaId(), newAccount);
     }
 
     @Override
@@ -74,13 +94,14 @@ public class AccountServiceImpl implements IAccountService{
                 .orElseThrow(() -> new BankAccountNotFoundException(updateAccountsBalancesCommand.getDestinationAccountNumber()));
 
         BigDecimal amount = new BigDecimal(updateAccountsBalancesCommand.getAmount());
-        BigDecimal sourceBalanceAfterDebit = sourceAccount.getBalance().subtract(amount);
 
-        if (sourceBalanceAfterDebit.compareTo(BigDecimal.ZERO) < 0) {
-            throw new InsufficientFundsException(sourceAccount.getAccountNumber(), amount);
+        try {
+            debit(sourceAccount, amount);
+        } catch (InsufficientFundsException e) {
+            accountEventProducer.publishBalanceUpdateFailed(
+                    updateAccountsBalancesCommand.getSagaId(), sourceAccount.getAccountNumber(), e.getMessage());
+            return;
         }
-
-        sourceAccount.setBalance(sourceBalanceAfterDebit);
         destinationAccount.setBalance(destinationAccount.getBalance().add(amount));
 
         accountRepository.save(sourceAccount);
@@ -90,6 +111,39 @@ public class AccountServiceImpl implements IAccountService{
                 updateAccountsBalancesCommand.getSagaId(),
                 sourceAccount,
                 destinationAccount);
+    }
+
+    @Override
+    @Transactional
+    public void updateAccountBalance(UpdateAccountBalanceCommand updateAccountBalanceCommand) {
+        Account account = accountRepository
+                .findAccountByAccountNumber(updateAccountBalanceCommand.getAccountNumber())
+                .orElseThrow(() -> new BankAccountNotFoundException(updateAccountBalanceCommand.getAccountNumber()));
+
+        BigDecimal amount = new BigDecimal(updateAccountBalanceCommand.getAmount());
+
+        try {
+            if (updateAccountBalanceCommand.getOperation() == BalanceOperation.DEBIT) {
+                debit(account, amount);
+            } else {
+                account.setBalance(account.getBalance().add(amount));
+            }
+        } catch (InsufficientFundsException e) {
+            accountEventProducer.publishBalanceUpdateFailed(
+                    updateAccountBalanceCommand.getSagaId(), account.getAccountNumber(), e.getMessage());
+            return;
+        }
+
+        accountRepository.save(account);
+        accountEventProducer.publishAccountBalanceUpdated(updateAccountBalanceCommand.getSagaId(), account);
+    }
+
+    private void debit(Account account, BigDecimal amount) {
+        BigDecimal newBalance = account.getBalance().subtract(amount);
+        if (newBalance.compareTo(BigDecimal.ZERO) < 0) {
+            throw new InsufficientFundsException(account.getAccountNumber(), amount);
+        }
+        account.setBalance(newBalance);
     }
 
     @Override

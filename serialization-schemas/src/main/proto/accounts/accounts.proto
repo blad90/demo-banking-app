@@ -44,6 +44,14 @@ message AccountCreatedEvent {
   AccountState accountState = 4;
 }
 
+// The Event: Account Service -> Account Orchestrator
+// Published when persisting the account itself fails after the user was already validated.
+message AccountNotCreatedEvent {
+  string saga_id = 1;
+  string account_number = 2;
+  string message = 3;
+}
+
 message AccountNotValidatedEvent {
   string saga_id = 1;
   int64 user_id = 2;
@@ -73,4 +81,34 @@ message AccountsBalancesUpdatedEvent {
   string saga_id = 1;
   string source_account_number = 2;
   string destination_account_number = 3;
+}
+
+// Single-account balance change, for DEBIT/CREDIT transactions (as opposed to
+// UpdateAccountsBalancesCommand above, which always moves money between two accounts).
+enum BalanceOperation {
+  DEBIT = 0;
+  CREDIT = 1;
+}
+
+// The Command: Transaction Orchestrator -> Account Service
+message UpdateAccountBalanceCommand {
+  string saga_id = 1;
+  string account_number = 2;
+  BalanceOperation operation = 3;
+  string amount = 4;
+}
+
+// The Event: Account Service -> Transaction Orchestrator
+message AccountBalanceUpdatedEvent {
+  string saga_id = 1;
+  string account_number = 2;
+}
+
+// The Event: Account Service -> Transaction Orchestrator
+// Covers both UpdateAccountsBalancesCommand and UpdateAccountBalanceCommand failing
+// (e.g. insufficient funds) after the accounts were already validated to exist.
+message BalanceUpdateFailedEvent {
+  string saga_id = 1;
+  string account_number = 2;
+  string message = 3;
 }

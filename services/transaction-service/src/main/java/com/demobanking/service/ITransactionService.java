@@ -4,6 +4,7 @@ import com.demobanking.dto.TransactionDTO;
 import com.demobanking.entity.Transaction;
 import com.demobanking.events.Transactions.TransferCommand;
 import com.demobanking.events.Transactions.CreateTransactionCommand;
+import com.demobanking.events.Transactions.CancelTransactionCommand;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -19,5 +20,6 @@ public interface ITransactionService {
     Page<TransactionDTO> findAllFilteredTransactions(String description, Pageable pageable);
     Page<TransactionDTO> findAllByCustomerId(Long customerId, Pageable pageable);
     void cancelTransaction(UUID transactionId);
+    void cancelTransactionByCorrelationId(CancelTransactionCommand cancelTransactionCommand);
 
 }

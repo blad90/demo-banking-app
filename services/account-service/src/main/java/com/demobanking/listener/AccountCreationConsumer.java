@@ -1,6 +1,7 @@
 package com.demobanking.listener;
 
 import com.demobanking.events.Accounts.UpdateAccountsBalancesCommand;
+import com.demobanking.events.Accounts.UpdateAccountBalanceCommand;
 import com.demobanking.events.Accounts.CreateAccountCommand;
 import com.demobanking.service.IAccountService;
 import lombok.RequiredArgsConstructor;
@@ -25,5 +26,12 @@ public class AccountCreationConsumer {
             containerFactory = "updateAcctsBalanceKafkaListenerContainerFactory")
     public void onUpdateAccountsBalancesEvent(UpdateAccountsBalancesCommand updateAccountsBalancesCommand) {
         accountService.updateAccountsBalances(updateAccountsBalancesCommand);
+    }
+
+    @KafkaListener(topics = "UPDATE_ACCOUNT_BALANCE_CMD",
+            groupId = "ACCOUNT_EVENT_GROUP",
+            containerFactory = "updateAcctBalanceKafkaListenerContainerFactory")
+    public void onUpdateAccountBalanceEvent(UpdateAccountBalanceCommand updateAccountBalanceCommand) {
+        accountService.updateAccountBalance(updateAccountBalanceCommand);
     }
 }

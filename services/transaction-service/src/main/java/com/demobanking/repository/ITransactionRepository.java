@@ -12,6 +12,7 @@ import java.util.UUID;
 @Repository
 public interface ITransactionRepository extends JpaRepository<Transaction, Long> {
     Optional<Transaction> findById(UUID transactionId);
+    Optional<Transaction> findByCorrelationId(UUID correlationId);
     Page<Transaction> findAllByDescriptionContainingIgnoreCase(String description, Pageable pageable);
     Page<Transaction> findAllByCustomerId(Long customerId, Pageable pageable);
 }
